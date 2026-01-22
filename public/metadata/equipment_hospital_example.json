@@ -1,0 +1,75 @@
+{
+    "name": "Wheelchair - Standard Model",
+    "description": "Standard manual wheelchair for patient mobility. This NFT serves as an internal digital record for hospital equipment tracking. NOT FOR PUBLIC TRADING.",
+    "id": "2",
+    "itemType": "Equipment",
+    "attributes": [
+        {
+            "trait_type": "Item Type",
+            "value": "Equipment"
+        },
+        {
+            "trait_type": "Total Quantity",
+            "value": 1
+        },
+        {
+            "trait_type": "Remaining Quantity",
+            "value": 1
+        },
+        {
+            "trait_type": "Serial Number",
+            "value": "WC-2026-045"
+        },
+        {
+            "trait_type": "Status",
+            "value": "In Store",
+            "display_value": "Available in Equipment Store"
+        },
+        {
+            "trait_type": "Ward Name",
+            "value": "",
+            "display_value": "Not Yet Issued"
+        },
+        {
+            "trait_type": "Patient ID",
+            "value": "",
+            "display_value": "Not Yet Assigned"
+        },
+        {
+            "trait_type": "Issued By",
+            "value": "",
+            "display_value": "Not Yet Issued"
+        },
+        {
+            "trait_type": "Issued Timestamp",
+            "value": 0,
+            "display_value": "Not Yet Issued"
+        },
+        {
+            "trait_type": "Equipment Category",
+            "value": "Mobility Aid"
+        },
+        {
+            "trait_type": "Condition",
+            "value": "New"
+        },
+        {
+            "trait_type": "Purchase Date",
+            "value": "2026-01-10"
+        },
+        {
+            "trait_type": "Maintenance Due",
+            "value": "2026-07-10"
+        },
+        {
+            "trait_type": "Weight Capacity",
+            "value": "120 kg"
+        }
+    ],
+    "internal_tracking": {
+        "note": "This NFT is used for internal hospital equipment tracking only",
+        "purpose": "Digital record for equipment issuance and audit trail",
+        "not_for_trading": true,
+        "hospital_system": "Internal Use Only"
+    }
+}
