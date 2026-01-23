@@ -62,6 +62,19 @@ function App() {
         let uri = '';
         try {
           console.log(`Loading asset ${i}...`);
+          
+          // Check if token exists before loading
+          try {
+            const owner = await medicalAsset.ownerOf(i);
+            if (!owner) {
+              console.log(`  ⊗ Token ${i} does not exist, skipping...`);
+              continue;
+            }
+          } catch (ownerError) {
+            console.log(`  ⊗ Token ${i} does not exist, skipping...`);
+            continue;
+          }
+          
           uri = await medicalAsset.tokenURI(i)
           console.log(`  URI: ${uri.substring(0, 100)}...`);
           

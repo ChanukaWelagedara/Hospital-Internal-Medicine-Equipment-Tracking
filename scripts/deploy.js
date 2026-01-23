@@ -4,14 +4,25 @@ const hre = require("hardhat");
 
 async function main() {
   // Setup accounts with new hospital roles
-  const [hospitalAdmin, storeManager, wardAuthority1, wardAuthority2] = await ethers.getSigners()
+  const signers = await ethers.getSigners()
+  const hospitalAdmin = signers[0]
+  const storeManager = signers[1] || hospitalAdmin // Use admin if only one account
+  const wardAuthority1 = signers[2] || hospitalAdmin
+  const wardAuthority2 = signers[3] || hospitalAdmin
 
+  const network = await ethers.provider.getNetwork()
+  console.log(`\nDeploying to network: ${network.name} (Chain ID: ${network.chainId})`)
   console.log("Deploying Internal Hospital Issuing & Tracking System...\n")
   console.log("Hospital Roles:")
   console.log(`  Hospital Admin: ${hospitalAdmin.address}`)
-  console.log(`  Store Manager: ${storeManager.address}`)
-  console.log(`  Ward Authority 1: ${wardAuthority1.address}`)
-  console.log(`  Ward Authority 2: ${wardAuthority2.address}\n`)
+  if (signers.length > 1) {
+    console.log(`  Store Manager: ${storeManager.address}`)
+    console.log(`  Ward Authority 1: ${wardAuthority1.address}`)
+    console.log(`  Ward Authority 2: ${wardAuthority2.address}`)
+  } else {
+    console.log(`  (Using single account for all roles on testnet)`)
+  }
+  console.log()
 
   // Deploy MedicalAsset NFT contract with hospital admin
   const MedicalAsset = await ethers.getContractFactory('MedicalAsset')
