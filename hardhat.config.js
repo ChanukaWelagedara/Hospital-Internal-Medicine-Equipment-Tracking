@@ -18,7 +18,11 @@ module.exports = {
     },
     sepolia: {
       url: process.env.SEPOLIA_RPC_URL || "",
-      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      accounts: [
+        process.env.PRIVATE_KEY_ADMIN,      // Account 0: Hospital Admin
+        process.env.PRIVATE_KEY_STORE,      // Account 1: Store Manager
+        process.env.PRIVATE_KEY_WARD        // Account 2: Ward Authority
+      ].filter(key => key !== undefined),   // Remove undefined keys
       chainId: 11155111,
       gas: "auto",
       gasPrice: "auto",

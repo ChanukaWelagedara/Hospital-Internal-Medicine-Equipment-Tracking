@@ -3,23 +3,24 @@
 const hre = require("hardhat");
 
 async function main() {
-  // Setup accounts with new hospital roles
+  // Setup accounts - Three separate roles
   const signers = await ethers.getSigners()
   const hospitalAdmin = signers[0]
-  const storeManager = signers[1] || hospitalAdmin // Use admin if only one account
-  const wardAuthority1 = signers[2] || hospitalAdmin
-  const wardAuthority2 = signers[3] || hospitalAdmin
+  const storeManager = signers[1] || hospitalAdmin
+  const wardAuthority = signers[2] || hospitalAdmin
 
   const network = await ethers.provider.getNetwork()
   console.log(`\nDeploying to network: ${network.name} (Chain ID: ${network.chainId})`)
   console.log("Deploying Internal Hospital Issuing & Tracking System...\n")
-  console.log("Hospital Roles:")
+  console.log("Active Accounts:")
   console.log(`  Hospital Admin: ${hospitalAdmin.address}`)
   if (signers.length > 1) {
     console.log(`  Store Manager: ${storeManager.address}`)
-    console.log(`  Ward Authority 1: ${wardAuthority1.address}`)
-    console.log(`  Ward Authority 2: ${wardAuthority2.address}`)
-  } else {
+  }
+  if (signers.length > 2) {
+    console.log(`  Ward Authority: ${wardAuthority.address}`)
+  }
+  if (signers.length === 1) {
     console.log(`  (Using single account for all roles on testnet)`)
   }
   console.log()
@@ -127,13 +128,12 @@ async function main() {
   console.log(`\n=== CONTRACT ADDRESSES ===`)
   console.log(`  MedicalAsset NFT: ${medicalAsset.address}`)
   console.log(`  HospitalEscrow: ${hospitalEscrow.address}`)
-  console.log(`\n=== SYSTEM ROLES ===`)
+  console.log(`\n=== ACTIVE ACCOUNTS ===`)
   console.log(`  Hospital Admin: ${hospitalAdmin.address}`)
   console.log(`  Store Manager: ${storeManager.address}`)
-  console.log(`  Ward Authority 1: ${wardAuthority1.address}`)
-  console.log(`  Ward Authority 2: ${wardAuthority2.address}`)
+  console.log(`  Ward Authority: ${wardAuthority.address}`)
   console.log(`\n=== NEXT STEPS ===`)
-  console.log(`1. Ward authorities can request assets using requestAsset()`)
+  console.log(`1. Ward authority can request assets using requestAsset()`)
   console.log(`2. Store manager approves with approveByStore()`)
   console.log(`3. Hospital admin approves and issues with approveByAdmin() and issueAsset()`)
   console.log(`4. NFT status is updated automatically to track issuance`)

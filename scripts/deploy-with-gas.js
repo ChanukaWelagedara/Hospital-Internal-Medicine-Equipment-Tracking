@@ -3,12 +3,24 @@ const hre = require("hardhat");
 
 async function main() {
   const signers = await ethers.getSigners();
-  const deployer = signers[0];
+  const hospitalAdmin = signers[0];
+  const storeManager = signers[1] || hospitalAdmin;
+  const wardAuthority = signers[2] || hospitalAdmin;
 
-  console.log("\nDeploying to Sepolia with explicit gas");
-  console.log("Deployer:", deployer.address);
+  console.log("\nDeploying Hospital System to Sepolia with explicit gas");
+  console.log("Active Accounts:");
+  console.log(`  Hospital Admin: ${hospitalAdmin.address}`);
+  if (signers.length > 1) {
+    console.log(`  Store Manager: ${storeManager.address}`);
+  }
+  if (signers.length > 2) {
+    console.log(`  Ward Authority: ${wardAuthority.address}`);
+  }
+  if (signers.length === 1) {
+    console.log(`  (Using single account for all roles on testnet)`);
+  }
   
-  const balance = await ethers.provider.getBalance(deployer.address);
+  const balance = await ethers.provider.getBalance(hospitalAdmin.address);
   console.log("Balance:", ethers.utils.formatEther(balance), "ETH\n");
 
   // Get current gas price
@@ -19,7 +31,7 @@ async function main() {
   console.log("\nDeploying MedicalAsset...");
   const MedicalAsset = await ethers.getContractFactory('MedicalAsset');
   
-  const medicalAsset = await MedicalAsset.deploy(deployer.address, {
+  const medicalAsset = await MedicalAsset.deploy(hospitalAdmin.address, {
     gasLimit: 5000000,
     gasPrice: gasPrice.mul(120).div(100) // 20% higher than current
   });
@@ -36,8 +48,8 @@ async function main() {
   
   const escrow = await HospitalEscrow.deploy(
     medicalAsset.address,
-    deployer.address,
-    deployer.address,
+    hospitalAdmin.address,
+    storeManager.address,
     {
       gasLimit: 3000000,
       gasPrice: gasPrice.mul(120).div(100)
@@ -50,22 +62,15 @@ async function main() {
   await escrow.deployed();
   console.log(`HospitalEscrow: ${escrow.address}`);
 
-  // Authorize escrow
-  console.log("\nAuthorizing escrow...");
-  const tx = await medicalAsset.setEscrowContract(escrow.address, {
-    gasLimit: 100000,
-    gasPrice: gasPrice.mul(120).div(100)
-  });
-  
-  console.log("Transaction sent! Hash:", tx.hash);
-  await tx.wait();
-  console.log("Authorized");
-
   console.log("\n================================");
   console.log("DEPLOYMENT COMPLETE!");
   console.log("================================");
   console.log(`MedicalAsset:   ${medicalAsset.address}`);
   console.log(`HospitalEscrow: ${escrow.address}`);
+  console.log("\nActive Accounts:");
+  console.log(`  Hospital Admin: ${hospitalAdmin.address}`);
+  console.log(`  Store Manager: ${storeManager.address}`);
+  console.log(`  Ward Authority: ${wardAuthority.address}`);
   console.log("\nUpdate src/config.json:");
   console.log(`"11155111": {`);
   console.log(`  "medicalAsset": { "address": "${medicalAsset.address}" },`);
