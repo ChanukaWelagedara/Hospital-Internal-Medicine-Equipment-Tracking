@@ -35,6 +35,7 @@ function App() {
   const [showStoreManagerDashboard, setShowStoreManagerDashboard] = useState(false);
   const [showRequestFromHospital, setShowRequestFromHospital] = useState(false);
   const [showHospitalProcurement, setShowHospitalProcurement] = useState(false);
+  const [activeTab, setActiveTab] = useState('medicines'); // 'medicines' or 'equipment'
 
   const loadBlockchainData = async () => {
     try {
@@ -178,9 +179,39 @@ function App() {
         provider={provider}
       />
 
-      {/* Main Content */}
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50">
-        <div className="max-w-7xl mx-auto px-6 py-8">
+      {/* Main Content with Professional Medical Background */}
+      <div className="min-h-screen relative overflow-hidden">
+        {/* Hero Background Image with Overlay */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1638202993928-7267aad84c31?w=1920&q=85')`,
+            filter: 'brightness(1.15)'
+          }}
+        >
+          {/* White Gradient Overlay for readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white/96 via-white/92 to-white/85"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/60 to-white/95"></div>
+        </div>
+        
+        {/* Subtle Medical Pattern Overlay */}
+        <div 
+          className="absolute inset-0 opacity-[0.015]"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, #0ea5e9 1px, transparent 1px),
+              linear-gradient(to bottom, #0ea5e9 1px, transparent 1px)
+            `,
+            backgroundSize: '50px 50px'
+          }}
+        ></div>
+        
+        {/* Gradient Accent for Depth */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-5"></div>
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-teal-400 rounded-full mix-blend-multiply filter blur-3xl opacity-5"></div>
+        
+        {/* Content Container */}
+        <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
           
           {/* Page Header with Actions */}
           <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-slate-200">
@@ -238,6 +269,45 @@ function App() {
             </div>
           </div>
 
+          {/* Tab Navigation */}
+          {assets.length > 0 && (
+            <div className="flex gap-3 mb-8">
+              <button
+                onClick={() => setActiveTab('medicines')}
+                className={`flex items-center gap-3 px-8 py-4 rounded-2xl font-bold transition-all duration-300 ${
+                  activeTab === 'medicines'
+                    ? 'bg-gradient-to-r from-pink-500 via-purple-500 to-purple-600 text-white shadow-xl scale-105'
+                    : 'bg-white text-slate-700 hover:bg-slate-50 shadow-md border border-slate-200'
+                }`}
+              >
+                <span className="text-2xl">💊</span>
+                <span className="text-lg">Medicines</span>
+                <span className={`px-3 py-1 rounded-full text-sm font-extrabold ${
+                  activeTab === 'medicines' ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-600'
+                }`}>
+                  {assets.filter(a => a.itemType === 'Medicine').length}
+                </span>
+              </button>
+              
+              <button
+                onClick={() => setActiveTab('equipment')}
+                className={`flex items-center gap-3 px-8 py-4 rounded-2xl font-bold transition-all duration-300 ${
+                  activeTab === 'equipment'
+                    ? 'bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 text-white shadow-xl scale-105'
+                    : 'bg-white text-slate-700 hover:bg-slate-50 shadow-md border border-slate-200'
+                }`}
+              >
+                <span className="text-2xl">🏥</span>
+                <span className="text-lg">Medical Equipment</span>
+                <span className={`px-3 py-1 rounded-full text-sm font-extrabold ${
+                  activeTab === 'equipment' ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-600'
+                }`}>
+                  {assets.filter(a => a.itemType === 'Equipment').length}
+                </span>
+              </button>
+            </div>
+          )}
+
           {/* Assets Grid */}
           {assets.length === 0 ? (
             <div className="card p-16 text-center">
@@ -255,85 +325,213 @@ function App() {
               )}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {assets.map((asset, index) => {
-                const expiryAttr = asset.attributes?.find(a => a.trait_type === "Expiry Date");
-                const batchSerial = asset.attributes?.find(a => a.trait_type === "Batch ID" || a.trait_type === "Serial Number");
-                const stockPercentage = (asset.remainingQuantity / asset.totalQuantity) * 100;
-                const isLowStock = stockPercentage < 30;
-                
-                return (
-                  <div 
-                    key={index} 
-                    onClick={() => togglePop(asset)} 
-                    className="card-medical cursor-pointer group hover:scale-105 transition-all duration-300 overflow-hidden"
-                  >
-                    {/* Card Header */}
-                    <div className="bg-gradient-to-br from-medical-blue-500 to-medical-teal-500 p-4 -m-6 mb-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-4xl">{asset.itemType === 'Medicine' ? '💊' : '🏥'}</span>
-                        <span className={`badge ${isLowStock ? 'bg-amber-500' : 'bg-white/20'} text-white text-xs`}>
-                          {isLowStock ? '⚠️ Low Stock' : '✅ In Stock'}
-                        </span>
-                      </div>
+            <>
+              {/* Medicines Section */}
+              {activeTab === 'medicines' && (() => {
+                const medicines = assets.filter(asset => asset.itemType === 'Medicine');
+                return medicines.length > 0 ? (
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      {medicines.map((asset, index) => {
+                        const expiryAttr = asset.attributes?.find(a => a.trait_type === "Expiry Date");
+                        const batchSerial = asset.attributes?.find(a => a.trait_type === "Batch ID" || a.trait_type === "Serial Number");
+                        const stockPercentage = (asset.remainingQuantity / asset.totalQuantity) * 100;
+                        const isLowStock = stockPercentage < 30;
+                        
+                        const isOutOfStock = asset.remainingQuantity === 0;
+                        const stockColor = isOutOfStock ? 'text-red-600' : isLowStock ? 'text-orange-500' : 'text-green-600';
+                        
+                        return (
+                          <div 
+                            key={index} 
+                            className="relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group border-t-[5px] border-blue-600"
+                          >
+                            {/* Number Badge */}
+                            <div className="absolute top-5 left-5 w-11 h-11 flex items-center justify-center bg-slate-50 rounded-lg border border-slate-200">
+                              <span className="text-slate-500 font-bold text-sm">
+                                {String(index + 1).padStart(2, '0')}
+                              </span>
+                            </div>
+                            
+                            {/* Card Content */}
+                            <div className="p-8 pt-10 flex flex-col items-center text-center">
+                              {/* Icon - Pill Bottle for Medicine */}
+                              <div className="mb-6 mt-4">
+                                <svg className="w-24 h-24 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                              </div>
+                              
+                              {/* Title */}
+                              <h4 className="text-xl font-bold text-slate-800 mb-4 min-h-[3rem] line-clamp-2">
+                                {asset.name}
+                              </h4>
+                              
+                              {/* Description/Details */}
+                              <div className="text-sm text-slate-600 space-y-2.5 mb-6 w-full">
+                                <p className="flex items-center justify-center gap-2">
+                                  <span className="font-semibold text-slate-500">Stock:</span>
+                                  <span className={`font-bold text-base ${stockColor}`}>
+                                    {asset.remainingQuantity}/{asset.totalQuantity}
+                                  </span>
+                                </p>
+                                
+                                {batchSerial && (
+                                  <p className="text-xs font-mono text-slate-400">
+                                    Batch: {batchSerial.value}
+                                  </p>
+                                )}
+                                
+                                {expiryAttr && (
+                                  <p className="text-xs text-amber-600 font-semibold">
+                                    Exp: {expiryAttr.value}
+                                  </p>
+                                )}
+                                
+                                {isLowStock && !isOutOfStock && (
+                                  <div className="flex items-center justify-center gap-1.5 text-orange-600 font-semibold text-xs mt-3">
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                    </svg>
+                                    <span>Low Stock</span>
+                                  </div>
+                                )}
+                                
+                                {isOutOfStock && (
+                                  <div className="flex items-center justify-center gap-1.5 text-red-600 font-semibold text-xs mt-3">
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                    </svg>
+                                    <span>Out of Stock</span>
+                                  </div>
+                                )}
+                              </div>
+                              
+                              {/* Action Button */}
+                              <button 
+                                onClick={() => togglePop(asset)}
+                                className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200"
+                              >
+                                View Details
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                    
-                    {/* Card Body */}
-                    <div className="space-y-3">
-                      <h4 className="text-lg font-bold text-slate-900 dark:text-slate-100 line-clamp-2 min-h-[3.5rem]">
-                        {asset.name}
-                      </h4>
-                      
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-sm">
-                          <span className="badge badge-info text-xs">{asset.itemType || 'Medicine'}</span>
-                        </div>
-                        
-                        {batchSerial && (
-                          <div className="flex items-center gap-2 text-sm text-slate-600">
-                            <span>🏷️</span>
-                            <span className="font-mono text-xs">{batchSerial.value}</span>
-                          </div>
-                        )}
-                        
-                        {/* Stock Progress Bar */}
-                        <div>
-                          <div className="flex justify-between items-center mb-1">
-                            <span className="text-xs text-slate-600 font-semibold">Available Stock</span>
-                            <span className="text-xs font-bold text-medical-blue-700">
-                              {asset.remainingQuantity}/{asset.totalQuantity}
-                            </span>
-                          </div>
-                          <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
-                            <div 
-                              className={`h-full rounded-full transition-all duration-300 ${
-                                stockPercentage > 50 ? 'bg-medical-green-500' :
-                                stockPercentage > 30 ? 'bg-amber-500' :
-                                'bg-red-500'
-                              }`}
-                              style={{ width: `${stockPercentage}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                        
-                        {expiryAttr && (
-                          <div className="flex items-center gap-2 text-xs text-slate-600 bg-amber-50 px-3 py-2 rounded-lg border border-amber-200">
-                            <span>📅</span>
-                            <span>Expires: <strong>{expiryAttr.value}</strong></span>
-                          </div>
-                        )}
-                      </div>
-                      
-                      {/* View Details Button */}
-                      <button className="w-full mt-4 py-2 bg-slate-100 hover:bg-medical-blue-100 text-medical-blue-700 rounded-lg font-semibold text-sm transition-colors duration-200 flex items-center justify-center gap-2">
-                        <span>👁️</span>
-                        <span>View Details</span>
-                      </button>
-                    </div>
+                  </>
+                ) : (
+                  <div className="card p-16 text-center">
+                    <div className="text-7xl mb-4">💊</div>
+                    <p className="text-xl font-semibold text-slate-700 mb-2">No Medicines Yet</p>
+                    <p className="text-sm text-slate-500">Add medicines to your inventory</p>
                   </div>
                 );
-              })}
-            </div>
+              })()}
+
+              {/* Equipment Section */}
+              {activeTab === 'equipment' && (() => {
+                const equipment = assets.filter(asset => asset.itemType === 'Equipment');
+                return equipment.length > 0 ? (
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      {equipment.map((asset, index) => {
+                        const expiryAttr = asset.attributes?.find(a => a.trait_type === "Expiry Date");
+                        const batchSerial = asset.attributes?.find(a => a.trait_type === "Batch ID" || a.trait_type === "Serial Number");
+                        const stockPercentage = (asset.remainingQuantity / asset.totalQuantity) * 100;
+                        const isLowStock = stockPercentage < 30;
+                        
+                        const isOutOfStock = asset.remainingQuantity === 0;
+                        const stockColor = isOutOfStock ? 'text-red-600' : isLowStock ? 'text-orange-500' : 'text-green-600';
+                        
+                        return (
+                          <div 
+                            key={index} 
+                            className="relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group border-t-[5px] border-blue-600"
+                          >
+                            {/* Number Badge */}
+                            <div className="absolute top-5 left-5 w-11 h-11 flex items-center justify-center bg-slate-50 rounded-lg border border-slate-200">
+                              <span className="text-slate-500 font-bold text-sm">
+                                {String(index + 1).padStart(2, '0')}
+                              </span>
+                            </div>
+                            
+                            {/* Card Content */}
+                            <div className="p-8 pt-10 flex flex-col items-center text-center">
+                              {/* Icon - Medical Equipment */}
+                              <div className="mb-6 mt-4">
+                                <svg className="w-24 h-24 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                                </svg>
+                              </div>
+                              
+                              {/* Title */}
+                              <h4 className="text-xl font-bold text-slate-800 mb-4 min-h-[3rem] line-clamp-2">
+                                {asset.name}
+                              </h4>
+                              
+                              {/* Description/Details */}
+                              <div className="text-sm text-slate-600 space-y-2.5 mb-6 w-full">
+                                <p className="flex items-center justify-center gap-2">
+                                  <span className="font-semibold text-slate-500">Stock:</span>
+                                  <span className={`font-bold text-base ${stockColor}`}>
+                                    {asset.remainingQuantity}/{asset.totalQuantity}
+                                  </span>
+                                </p>
+                                
+                                {batchSerial && (
+                                  <p className="text-xs font-mono text-slate-400">
+                                    Serial: {batchSerial.value}
+                                  </p>
+                                )}
+                                
+                                {expiryAttr && (
+                                  <p className="text-xs text-amber-600 font-semibold">
+                                    Exp: {expiryAttr.value}
+                                  </p>
+                                )}
+                                
+                                {isLowStock && !isOutOfStock && (
+                                  <div className="flex items-center justify-center gap-1.5 text-orange-600 font-semibold text-xs mt-3">
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                    </svg>
+                                    <span>Low Stock</span>
+                                  </div>
+                                )}
+                                
+                                {isOutOfStock && (
+                                  <div className="flex items-center justify-center gap-1.5 text-red-600 font-semibold text-xs mt-3">
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                    </svg>
+                                    <span>Out of Stock</span>
+                                  </div>
+                                )}
+                              </div>
+                              
+                              {/* Action Button */}
+                              <button 
+                                onClick={() => togglePop(asset)}
+                                className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200"
+                              >
+                                View Details
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                ) : (
+                  <div className="card p-16 text-center">
+                    <div className="text-7xl mb-4">🏥</div>
+                    <p className="text-xl font-semibold text-slate-700 mb-2">No Equipment Yet</p>
+                    <p className="text-sm text-slate-500">Add medical equipment to your inventory</p>
+                  </div>
+                );
+              })()}
+            </>
           )}
 
         </div>
