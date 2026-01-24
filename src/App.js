@@ -179,9 +179,12 @@ function App() {
         provider={provider}
       />
 
-      {/* Main Content with Professional Medical Background */}
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-white">
-        <div className="max-w-7xl mx-auto px-6 py-8">
+      {/* Show main inventory only when no dashboard is active */}
+      {!showStoreManagerDashboard && !showHospitalProcurement && !showRequestFromHospital && (
+        <>
+          {/* Main Content with Professional Medical Background */}
+          <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-white">
+            <div className="max-w-7xl mx-auto px-6 py-8">
           
           {/* Hero Section with Stats */}
           <div className="mb-8">
@@ -516,6 +519,8 @@ function App() {
 
         </div>
       </div>
+        </>
+      )}
 
       {console.log('showAddAsset state:', showAddAsset)}
       {showAddAsset && (
