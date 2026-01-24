@@ -180,91 +180,83 @@ function App() {
       />
 
       {/* Main Content with Professional Medical Background */}
-      <div className="min-h-screen relative overflow-hidden">
-        {/* Hero Background Image with Overlay */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1638202993928-7267aad84c31?w=1920&q=85')`,
-            filter: 'brightness(1.15)'
-          }}
-        >
-          {/* White Gradient Overlay for readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white/96 via-white/92 to-white/85"></div>
-          <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/60 to-white/95"></div>
-        </div>
-        
-        {/* Subtle Medical Pattern Overlay */}
-        <div 
-          className="absolute inset-0 opacity-[0.015]"
-          style={{
-            backgroundImage: `
-              linear-gradient(to right, #0ea5e9 1px, transparent 1px),
-              linear-gradient(to bottom, #0ea5e9 1px, transparent 1px)
-            `,
-            backgroundSize: '50px 50px'
-          }}
-        ></div>
-        
-        {/* Gradient Accent for Depth */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-5"></div>
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-teal-400 rounded-full mix-blend-multiply filter blur-3xl opacity-5"></div>
-        
-        {/* Content Container */}
-        <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-white">
+        <div className="max-w-7xl mx-auto px-6 py-8">
           
-          {/* Page Header with Actions */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-slate-200">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-              <div>
-                <h3 className="text-2xl font-bold text-slate-900 mb-1 flex items-center gap-3">
-                  <span className="text-3xl">🏭</span>
-                  <span>Hospital Inventory</span>
-                </h3>
-                <p className="text-sm text-slate-600">Medicines & Equipment Management System</p>
-              </div>
-              
-              {/* Action Buttons */}
-              <div className="flex flex-wrap gap-3">
-                {/* Hospital Authority (Admin) can add new assets */}
-                {userRole === 'admin' && (
-                  <>
-                    <button 
-                      onClick={() => setShowAddAsset(true)} 
-                      className="btn-success flex items-center gap-2"
-                    >
-                      <span>➕</span>
-                      <span>Add Asset</span>
-                    </button>
-                    <button 
-                      onClick={() => setShowHospitalProcurement(true)} 
-                      className="btn-primary flex items-center gap-2"
-                    >
-                      <span>📦</span>
-                      <span>Procurement Requests</span>
-                    </button>
-                  </>
-                )}
+          {/* Hero Section with Stats */}
+          <div className="mb-8">
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl shadow-xl overflow-hidden">
+              <div className="relative px-8 py-10">
+                {/* Decorative Elements */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500 rounded-full -mr-32 -mt-32 opacity-20"></div>
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-800 rounded-full -ml-24 -mb-24 opacity-20"></div>
                 
-                {/* Store Manager specific actions */}
-                {userRole === 'store' && (
-                  <>
-                    <button 
-                      onClick={() => setShowStoreManagerDashboard(true)} 
-                      className="btn-primary flex items-center gap-2"
-                    >
-                      <span>📋</span>
-                      <span>Ward Requests</span>
-                    </button>
-                    <button 
-                      onClick={() => setShowRequestFromHospital(true)} 
-                      className="btn-secondary flex items-center gap-2"
-                    >
-                      <span>📝</span>
-                      <span>Request Stock</span>
-                    </button>
-                  </>
-                )}
+                <div className="relative z-10">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg">
+                        <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h1 className="text-3xl font-bold text-white mb-1">Hospital Inventory</h1>
+                        <p className="text-blue-100">Comprehensive Medical Asset Management System</p>
+                      </div>
+                    </div>
+                    
+                    {/* Action Buttons */}
+                    <div className="flex flex-wrap gap-3">
+                      {/* Hospital Authority (Admin) can add new assets */}
+                      {userRole === 'admin' && (
+                        <>
+                          <button 
+                            onClick={() => setShowAddAsset(true)} 
+                            className="flex items-center gap-2 px-5 py-3 bg-white text-blue-700 rounded-xl font-semibold hover:bg-blue-50 shadow-lg hover:shadow-xl transition-all duration-200"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            <span>Add Asset</span>
+                          </button>
+                          <button 
+                            onClick={() => setShowHospitalProcurement(true)} 
+                            className="flex items-center gap-2 px-5 py-3 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-400 shadow-lg hover:shadow-xl transition-all duration-200"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                            </svg>
+                            <span>Procurement Requests</span>
+                          </button>
+                        </>
+                      )}
+                      
+                      {/* Store Manager specific actions */}
+                      {userRole === 'store' && (
+                        <>
+                          <button 
+                            onClick={() => setShowStoreManagerDashboard(true)} 
+                            className="flex items-center gap-2 px-5 py-3 bg-white text-blue-700 rounded-xl font-semibold hover:bg-blue-50 shadow-lg hover:shadow-xl transition-all duration-200"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            <span>Ward Requests</span>
+                          </button>
+                          <button 
+                            onClick={() => setShowRequestFromHospital(true)} 
+                            className="flex items-center gap-2 px-5 py-3 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-400 shadow-lg hover:shadow-xl transition-all duration-200"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <span>Request Stock</span>
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -274,16 +266,18 @@ function App() {
             <div className="flex gap-3 mb-8">
               <button
                 onClick={() => setActiveTab('medicines')}
-                className={`flex items-center gap-3 px-8 py-4 rounded-2xl font-bold transition-all duration-300 ${
+                className={`flex items-center gap-3 px-8 py-4 rounded-xl font-bold transition-all duration-300 ${ 
                   activeTab === 'medicines'
-                    ? 'bg-gradient-to-r from-pink-500 via-purple-500 to-purple-600 text-white shadow-xl scale-105'
-                    : 'bg-white text-slate-700 hover:bg-slate-50 shadow-md border border-slate-200'
+                    ? 'bg-white text-blue-700 shadow-lg border-2 border-blue-500'
+                    : 'bg-white/80 text-slate-600 hover:bg-white hover:shadow-md border border-slate-200'
                 }`}
               >
-                <span className="text-2xl">💊</span>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
                 <span className="text-lg">Medicines</span>
-                <span className={`px-3 py-1 rounded-full text-sm font-extrabold ${
-                  activeTab === 'medicines' ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-600'
+                <span className={`px-3 py-1 rounded-full text-sm font-bold ${
+                  activeTab === 'medicines' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'
                 }`}>
                   {assets.filter(a => a.itemType === 'Medicine').length}
                 </span>
@@ -291,16 +285,18 @@ function App() {
               
               <button
                 onClick={() => setActiveTab('equipment')}
-                className={`flex items-center gap-3 px-8 py-4 rounded-2xl font-bold transition-all duration-300 ${
+                className={`flex items-center gap-3 px-8 py-4 rounded-xl font-bold transition-all duration-300 ${
                   activeTab === 'equipment'
-                    ? 'bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 text-white shadow-xl scale-105'
-                    : 'bg-white text-slate-700 hover:bg-slate-50 shadow-md border border-slate-200'
+                    ? 'bg-white text-blue-700 shadow-lg border-2 border-blue-500'
+                    : 'bg-white/80 text-slate-600 hover:bg-white hover:shadow-md border border-slate-200'
                 }`}
               >
-                <span className="text-2xl">🏥</span>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                </svg>
                 <span className="text-lg">Medical Equipment</span>
-                <span className={`px-3 py-1 rounded-full text-sm font-extrabold ${
-                  activeTab === 'equipment' ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-600'
+                <span className={`px-3 py-1 rounded-full text-sm font-bold ${
+                  activeTab === 'equipment' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'
                 }`}>
                   {assets.filter(a => a.itemType === 'Equipment').length}
                 </span>
@@ -310,16 +306,22 @@ function App() {
 
           {/* Assets Grid */}
           {assets.length === 0 ? (
-            <div className="card p-16 text-center">
-              <div className="text-7xl mb-4">🏭</div>
-              <p className="text-xl font-semibold text-slate-700 mb-2">No Assets Yet</p>
-              <p className="text-sm text-slate-500 mb-6">Start by adding medicines or equipment to your inventory</p>
+            <div className="bg-white rounded-2xl shadow-md p-16 text-center border border-slate-200">
+              <div className="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full flex items-center justify-center">
+                <svg className="w-16 h-16 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+              </div>
+              <p className="text-2xl font-bold text-slate-800 mb-2">No Assets Yet</p>
+              <p className="text-slate-500 mb-6">Start by adding medicines or equipment to your inventory</p>
               {userRole === 'admin' && (
                 <button 
                   onClick={() => setShowAddAsset(true)} 
-                  className="btn-primary inline-flex items-center gap-2"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-blue-700 shadow-md hover:shadow-lg transition-all duration-200"
                 >
-                  <span>➕</span>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
                   <span>Add First Asset</span>
                 </button>
               )}
@@ -377,32 +379,16 @@ function App() {
                                 </p>
                                 
                                 {batchSerial && (
-                                  <p className="text-xs font-mono text-slate-400">
-                                    Batch: {batchSerial.value}
-                                  </p>
-                                )}
-                                
-                                {expiryAttr && (
-                                  <p className="text-xs text-amber-600 font-semibold">
-                                    Exp: {expiryAttr.value}
-                                  </p>
-                                )}
-                                
-                                {isLowStock && !isOutOfStock && (
-                                  <div className="flex items-center justify-center gap-1.5 text-orange-600 font-semibold text-xs mt-3">
-                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                    </svg>
-                                    <span>Low Stock</span>
+                                  <div className="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-lg">
+                                    <span className="text-xs text-slate-500">Batch</span>
+                                    <span className="text-xs font-mono text-slate-700">{batchSerial.value}</span>
                                   </div>
                                 )}
                                 
-                                {isOutOfStock && (
-                                  <div className="flex items-center justify-center gap-1.5 text-red-600 font-semibold text-xs mt-3">
-                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                                    </svg>
-                                    <span>Out of Stock</span>
+                                {expiryAttr && (
+                                  <div className="flex items-center justify-between px-3 py-2 bg-amber-50 rounded-lg">
+                                    <span className="text-xs text-amber-600 font-medium">Expiry</span>
+                                    <span className="text-xs text-amber-700 font-medium">{expiryAttr.value}</span>
                                   </div>
                                 )}
                               </div>
@@ -410,7 +396,7 @@ function App() {
                               {/* Action Button */}
                               <button 
                                 onClick={() => togglePop(asset)}
-                                className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200"
+                                className="w-full py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
                               >
                                 View Details
                               </button>
@@ -421,10 +407,14 @@ function App() {
                     </div>
                   </>
                 ) : (
-                  <div className="card p-16 text-center">
-                    <div className="text-7xl mb-4">💊</div>
-                    <p className="text-xl font-semibold text-slate-700 mb-2">No Medicines Yet</p>
-                    <p className="text-sm text-slate-500">Add medicines to your inventory</p>
+                  <div className="bg-white rounded-2xl shadow-md p-12 text-center border border-slate-200">
+                    <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-full flex items-center justify-center">
+                      <svg className="w-12 h-12 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                    </div>
+                    <p className="text-xl font-bold text-slate-800 mb-1">No Medicines Yet</p>
+                    <p className="text-slate-500">Add medicines to your inventory</p>
                   </div>
                 );
               })()}
@@ -447,65 +437,51 @@ function App() {
                         return (
                           <div 
                             key={index} 
-                            className="relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group border-t-[5px] border-blue-600"
+                            className="relative bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-blue-300"
                           >
-                            {/* Number Badge */}
-                            <div className="absolute top-5 left-5 w-11 h-11 flex items-center justify-center bg-slate-50 rounded-lg border border-slate-200">
-                              <span className="text-slate-500 font-bold text-sm">
-                                {String(index + 1).padStart(2, '0')}
-                              </span>
-                            </div>
+                            {/* Status Badge */}
+                            {(isLowStock || isOutOfStock) && (
+                              <div className={`absolute top-3 right-3 px-2.5 py-1 rounded-full text-xs font-bold ${
+                                isOutOfStock ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'
+                              }`}>
+                                {isOutOfStock ? 'Out of Stock' : 'Low Stock'}
+                              </div>
+                            )}
                             
                             {/* Card Content */}
-                            <div className="p-8 pt-10 flex flex-col items-center text-center">
+                            <div className="p-6 flex flex-col items-center text-center">
                               {/* Icon - Medical Equipment */}
-                              <div className="mb-6 mt-4">
-                                <svg className="w-24 h-24 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                              <div className="mb-4 w-16 h-16 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl flex items-center justify-center">
+                                <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
                                 </svg>
                               </div>
                               
                               {/* Title */}
-                              <h4 className="text-xl font-bold text-slate-800 mb-4 min-h-[3rem] line-clamp-2">
+                              <h4 className="text-lg font-bold text-slate-800 mb-3 line-clamp-2">
                                 {asset.name}
                               </h4>
                               
                               {/* Description/Details */}
-                              <div className="text-sm text-slate-600 space-y-2.5 mb-6 w-full">
-                                <p className="flex items-center justify-center gap-2">
-                                  <span className="font-semibold text-slate-500">Stock:</span>
-                                  <span className={`font-bold text-base ${stockColor}`}>
+                              <div className="text-sm text-slate-600 space-y-2 mb-5 w-full">
+                                <div className="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-lg">
+                                  <span className="font-medium text-slate-500">Stock</span>
+                                  <span className={`font-bold ${stockColor}`}>
                                     {asset.remainingQuantity}/{asset.totalQuantity}
                                   </span>
-                                </p>
+                                </div>
                                 
                                 {batchSerial && (
-                                  <p className="text-xs font-mono text-slate-400">
-                                    Serial: {batchSerial.value}
-                                  </p>
-                                )}
-                                
-                                {expiryAttr && (
-                                  <p className="text-xs text-amber-600 font-semibold">
-                                    Exp: {expiryAttr.value}
-                                  </p>
-                                )}
-                                
-                                {isLowStock && !isOutOfStock && (
-                                  <div className="flex items-center justify-center gap-1.5 text-orange-600 font-semibold text-xs mt-3">
-                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                    </svg>
-                                    <span>Low Stock</span>
+                                  <div className="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-lg">
+                                    <span className="text-xs text-slate-500">Serial</span>
+                                    <span className="text-xs font-mono text-slate-700">{batchSerial.value}</span>
                                   </div>
                                 )}
                                 
-                                {isOutOfStock && (
-                                  <div className="flex items-center justify-center gap-1.5 text-red-600 font-semibold text-xs mt-3">
-                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                                    </svg>
-                                    <span>Out of Stock</span>
+                                {expiryAttr && (
+                                  <div className="flex items-center justify-between px-3 py-2 bg-amber-50 rounded-lg">
+                                    <span className="text-xs text-amber-600 font-medium">Expiry</span>
+                                    <span className="text-xs text-amber-700 font-medium">{expiryAttr.value}</span>
                                   </div>
                                 )}
                               </div>
@@ -513,7 +489,7 @@ function App() {
                               {/* Action Button */}
                               <button 
                                 onClick={() => togglePop(asset)}
-                                className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200"
+                                className="w-full py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
                               >
                                 View Details
                               </button>
@@ -524,10 +500,14 @@ function App() {
                     </div>
                   </>
                 ) : (
-                  <div className="card p-16 text-center">
-                    <div className="text-7xl mb-4">🏥</div>
-                    <p className="text-xl font-semibold text-slate-700 mb-2">No Equipment Yet</p>
-                    <p className="text-sm text-slate-500">Add medical equipment to your inventory</p>
+                  <div className="bg-white rounded-2xl shadow-md p-12 text-center border border-slate-200">
+                    <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-full flex items-center justify-center">
+                      <svg className="w-12 h-12 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                      </svg>
+                    </div>
+                    <p className="text-xl font-bold text-slate-800 mb-1">No Equipment Yet</p>
+                    <p className="text-slate-500">Add medical equipment to your inventory</p>
                   </div>
                 );
               })()}

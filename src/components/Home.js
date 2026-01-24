@@ -289,12 +289,12 @@ const Home = ({ home, provider, account, escrow, medicalAsset, togglePop, userRo
     }
 
     return (
-        <div className="home fixed inset-0 z-40 flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm overflow-auto animate-fade-in">
-            <div className="home__details bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8 max-w-5xl w-full max-h-[90vh] overflow-auto relative animate-slide-up">
+        <div className="home fixed inset-0 z-40 flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm overflow-auto">
+            <div className="home__details bg-white rounded-2xl shadow-2xl p-8 max-w-5xl w-full max-h-[90vh] overflow-auto relative">
                 {/* Close Button */}
                 <button 
                     onClick={togglePop} 
-                    className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all duration-200 text-2xl font-light"
+                    className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 transition-all duration-200 text-2xl font-light"
                     title="Close"
                 >
                     ×
@@ -304,20 +304,31 @@ const Home = ({ home, provider, account, escrow, medicalAsset, togglePop, userRo
                     {/* Header */}
                     <div className="mb-6">
                         <div className="flex items-start gap-4">
-                            <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-medical-blue-500 to-medical-teal-500 rounded-xl flex items-center justify-center text-3xl shadow-medical">
-                                {home.itemType === 'Medicine' ? '💊' : '🏥'}
+                            <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+                                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    {home.itemType === 'Medicine' ? (
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    ) : (
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                                    )}
+                                </svg>
                             </div>
                             <div className="flex-1">
-                                <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">{home.name}</h1>
-                                <p className="text-sm text-slate-600 dark:text-slate-400">{home.description}</p>
+                                <div className="flex items-center gap-3 mb-2">
+                                    <h1 className="text-2xl font-bold text-slate-900">{home.name}</h1>
+                                    <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-semibold rounded-full">
+                                        {home.itemType}
+                                    </span>
+                                </div>
+                                <p className="text-slate-600">{home.description}</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="border-t border-slate-200 dark:border-slate-700 my-6"></div>
+                    <div className="border-t border-slate-200 my-6"></div>
 
                     {/* Asset Details Card */}
-                    <div className="bg-gradient-to-br from-medical-blue-50 to-medical-teal-50 rounded-xl p-6 mb-6 border border-medical-blue-100">
+                    <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-6 mb-6 border border-blue-100">
                         <h2 className="text-lg font-bold text-medical-blue-900 mb-4 flex items-center gap-2">
                             <span>📊</span>
                             <span>Asset Details</span>
