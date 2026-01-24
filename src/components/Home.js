@@ -272,116 +272,310 @@ const Home = ({ home, provider, account, escrow, medicalAsset, togglePop, userRo
     }
 
     const getStatusBadge = (status) => {
-        const statuses = ["In Store", "Issued to Ward", "Issued to Patient", "Expired", "Disposed"]
-        const colors = ["#10b981", "#3b82f6", "#8b5cf6", "#f59e0b", "#ef4444"]
+        const statusConfig = [
+            { label: "In Store", icon: "📦", class: "badge-success" },
+            { label: "Issued to Ward", icon: "🏥", class: "badge-info" },
+            { label: "Issued to Patient", icon: "👤", class: "badge-teal" },
+            { label: "Expired", icon: "⚠️", class: "badge-warning" },
+            { label: "Disposed", icon: "🗑️", class: "badge-danger" }
+        ]
+        const config = statusConfig[status] || { label: "Unknown", icon: "❓", class: "badge" }
         return (
-            <span style={{
-                background: colors[status] || "#6b7280",
-                color: 'white',
-                padding: '4px 12px',
-                borderRadius: '12px',
-                fontSize: '12px',
-                fontWeight: '600'
-            }}>
-                {statuses[status] || "Unknown"}
+            <span className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold ${config.class}`}>
+                <span>{config.icon}</span>
+                <span>{config.label}</span>
             </span>
         )
     }
 
     return (
-        <div className="home fixed inset-0 z-40 flex items-center justify-center p-6 bg-black/60 overflow-auto">
-            <div className="home__details bg-white dark:bg-slate-800 rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-auto relative">
+        <div className="home fixed inset-0 z-40 flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm overflow-auto animate-fade-in">
+            <div className="home__details bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8 max-w-5xl w-full max-h-[90vh] overflow-auto relative animate-slide-up">
+                {/* Close Button */}
+                <button 
+                    onClick={togglePop} 
+                    className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all duration-200 text-2xl font-light"
+                    title="Close"
+                >
+                    ×
+                </button>
+
                 <div className="home__overview w-full">
-                    <button onClick={togglePop} className="absolute top-4 right-4 text-slate-500 hover:text-slate-700 dark:text-slate-300">×</button>
+                    {/* Header */}
+                    <div className="mb-6">
+                        <div className="flex items-start gap-4">
+                            <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-medical-blue-500 to-medical-teal-500 rounded-xl flex items-center justify-center text-3xl shadow-medical">
+                                {home.itemType === 'Medicine' ? '💊' : '🏥'}
+                            </div>
+                            <div className="flex-1">
+                                <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">{home.name}</h1>
+                                <p className="text-sm text-slate-600 dark:text-slate-400">{home.description}</p>
+                            </div>
+                        </div>
+                    </div>
 
-                    <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{home.name}</h1>
-                    <p className="text-sm text-slate-500 dark:text-slate-300">{home.description}</p>
+                    <div className="border-t border-slate-200 dark:border-slate-700 my-6"></div>
 
-                    <hr className="my-4 border-slate-200 dark:border-slate-700" />
-
-                    <h2 className="text-lg font-medium">Asset Details</h2>
-                    
-                    <div className="mb-4">
+                    {/* Asset Details Card */}
+                    <div className="bg-gradient-to-br from-medical-blue-50 to-medical-teal-50 rounded-xl p-6 mb-6 border border-medical-blue-100">
+                        <h2 className="text-lg font-bold text-medical-blue-900 mb-4 flex items-center gap-2">
+                            <span>📊</span>
+                            <span>Asset Details</span>
+                        </h2>
                         {assetInfo && (
-                            <div className="space-y-1 text-sm text-slate-700 dark:text-slate-200">
-                                <p><strong>Status:</strong> {getStatusBadge(assetInfo.status)}</p>
-                                <p><strong>Available Quantity:</strong> {assetInfo.remainingQuantity.toString()} / {assetInfo.totalQuantity.toString()} units</p>
-                                {assetInfo.wardName && <p><strong>Current Ward:</strong> {assetInfo.wardName}</p>}
-                                {assetInfo.patientId && <p><strong>Patient ID:</strong> {assetInfo.patientId}</p>}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="bg-white rounded-lg p-4 shadow-sm">
+                                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">Status</p>
+                                    <div>{getStatusBadge(assetInfo.status)}</div>
+                                </div>
+                                <div className="bg-white rounded-lg p-4 shadow-sm">
+                                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">Available Quantity</p>
+                                    <p className="text-2xl font-bold text-medical-blue-700">
+                                        {assetInfo.remainingQuantity.toString()}
+                                        <span className="text-sm text-slate-500 font-normal"> / {assetInfo.totalQuantity.toString()} units</span>
+                                    </p>
+                                </div>
+                                {assetInfo.wardName && (
+                                    <div className="bg-white rounded-lg p-4 shadow-sm">
+                                        <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">Current Ward</p>
+                                        <p className="text-sm font-semibold text-slate-800">{assetInfo.wardName}</p>
+                                    </div>
+                                )}
+                                {assetInfo.patientId && (
+                                    <div className="bg-white rounded-lg p-4 shadow-sm">
+                                        <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">Patient ID</p>
+                                        <p className="text-sm font-semibold text-slate-800">{assetInfo.patientId}</p>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
 
-                    {home.attributes && (
-                        <ul className="list-disc list-inside mb-4 text-sm text-slate-600 dark:text-slate-300">
-                            {home.attributes.map((attribute, index) => (
-                                <li key={index}><strong>{attribute.trait_type}</strong> : {attribute.value}</li>
-                            ))}
-                        </ul>
-                    )}
-
-                    {userRole === 'ward' && (
-                        <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-700 rounded-md">
-                            <h3 className="text-md font-semibold text-emerald-600">Request This Asset</h3>
-                            
-                            <div className="mt-3">
-                                <label className="block mb-1 font-medium">Ward Name *</label>
-                                <input type="text" value={wardName} onChange={(e) => setWardName(e.target.value)} placeholder="e.g., ICU Ward" className="w-full px-3 py-2 border rounded-md bg-white dark:bg-slate-800" />
+                    {/* Attributes */}
+                    {home.attributes && home.attributes.length > 0 && (
+                        <div className="bg-white rounded-xl p-6 mb-6 border border-slate-200 shadow-sm">
+                            <h3 className="text-md font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                <span>📋</span>
+                                <span>Additional Information</span>
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {home.attributes.map((attribute, index) => (
+                                    <div key={index} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                                        <div className="w-2 h-2 bg-medical-blue-500 rounded-full"></div>
+                                        <div>
+                                            <p className="text-xs text-slate-500">{attribute.trait_type}</p>
+                                            <p className="text-sm font-semibold text-slate-800">{attribute.value}</p>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
-
-                            <div className="mt-3">
-                                <label className="block mb-1 font-medium">Patient ID (optional)</label>
-                                <input type="text" value={patientId} onChange={(e) => setPatientId(e.target.value)} placeholder="e.g., P-2026-1234" className="w-full px-3 py-2 border rounded-md bg-white dark:bg-slate-800" />
-                            </div>
-
-                            <div className="mt-3">
-                                <label className="block mb-1 font-medium">Quantity *</label>
-                                <input type="number" value={requestedQuantity} onChange={(e) => setRequestedQuantity(e.target.value)} placeholder="Number of units" className="w-full px-3 py-2 border rounded-md bg-white dark:bg-slate-800" />
-                            </div>
-
-                            <div className="mt-3">
-                                <label className="block mb-1 font-medium">Remarks</label>
-                                <textarea value={remarks} onChange={(e) => setRemarks(e.target.value)} placeholder="Additional notes..." rows="3" className="w-full px-3 py-2 border rounded-md bg-white dark:bg-slate-800" />
-                            </div>
-
-                            <button onClick={handleRequestAsset} disabled={loading} className="mt-4 w-full px-4 py-2 rounded-md bg-emerald-500 text-white font-semibold">{loading ? 'Processing...' : 'Submit Request'}</button>
                         </div>
                     )}
 
-                    {pendingRequests.length > 0 && (
-                        <div className="mt-4">
-                            <h3 className="text-lg font-medium mb-3">Pending Requests for This Asset</h3>
-                            {pendingRequests.map((request, index) => (
-                                <div key={index} className="mb-3 p-3 rounded-md bg-amber-50 border border-amber-200">
-                                    <p className="font-semibold">Request #{request.id}</p>
-                                    <p><strong>Ward:</strong> {request.wardName}</p>
-                                    {request.patientId && <p><strong>Patient:</strong> {request.patientId}</p>}
-                                    <p><strong>Quantity:</strong> {request.requestedQuantity.toString()} units</p>
-                                    {request.remarks && <p><strong>Remarks:</strong> {request.remarks}</p>}
-
-                                    <div className="mt-2 text-sm">
-                                        <p><strong>Store Approved:</strong> {request.storeApproved ? '✅' : '❌'} &nbsp; <strong>Admin Approved:</strong> {request.adminApproved ? '✅' : '❌'}</p>
-                                    </div>
-
-                                    <div className="mt-3 flex gap-2 flex-wrap">
-                                        {userRole === 'store' && !request.storeApproved && (
-                                            <button onClick={() => handleStoreApprove(request.id)} disabled={loading} className="px-3 py-1 rounded-md bg-blue-600 text-white font-semibold">Approve (Store)</button>
-                                        )}
-
-                                        {userRole === 'admin' && request.storeApproved && !request.adminApproved && (
-                                            <button onClick={() => handleAdminApprove(request.id)} disabled={loading} className="px-3 py-1 rounded-md bg-indigo-600 text-white font-semibold">Approve (Admin)</button>
-                                        )}
-
-                                        {userRole === 'admin' && request.storeApproved && request.adminApproved && (
-                                            <button onClick={() => handleIssueAsset(request.id)} disabled={loading} className="px-3 py-1 rounded-md bg-emerald-500 text-white font-semibold">Issue Asset</button>
-                                        )}
-
-                                        {(userRole === 'admin' || userRole === 'store') && (
-                                            <button onClick={() => handleCancelRequest(request.id)} disabled={loading} className="px-3 py-1 rounded-md bg-rose-600 text-white font-semibold">Cancel</button>
-                                        )}
-                                    </div>
+                    {/* Ward Request Form */}
+                    {userRole === 'ward' && (
+                        <div className="bg-gradient-to-br from-medical-green-50 to-emerald-50 rounded-xl p-6 mb-6 border border-medical-green-200">
+                            <h3 className="text-lg font-bold text-medical-green-800 mb-4 flex items-center gap-2">
+                                <span>📝</span>
+                                <span>Request This Asset</span>
+                            </h3>
+                            
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="label">
+                                        <span className="flex items-center gap-1">
+                                            <span>🏥</span>
+                                            <span>Ward Name *</span>
+                                        </span>
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        value={wardName} 
+                                        onChange={(e) => setWardName(e.target.value)} 
+                                        placeholder="e.g., ICU Ward, Emergency Ward" 
+                                        className="input-field"
+                                    />
                                 </div>
-                            ))}
+
+                                <div>
+                                    <label className="label">
+                                        <span className="flex items-center gap-1">
+                                            <span>👤</span>
+                                            <span>Patient ID (optional)</span>
+                                        </span>
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        value={patientId} 
+                                        onChange={(e) => setPatientId(e.target.value)} 
+                                        placeholder="e.g., P-2026-1234" 
+                                        className="input-field"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="label">
+                                        <span className="flex items-center gap-1">
+                                            <span>🔢</span>
+                                            <span>Quantity *</span>
+                                        </span>
+                                    </label>
+                                    <input 
+                                        type="number" 
+                                        value={requestedQuantity} 
+                                        onChange={(e) => setRequestedQuantity(e.target.value)} 
+                                        placeholder="Number of units needed" 
+                                        className="input-field"
+                                        min="1"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="label">
+                                        <span className="flex items-center gap-1">
+                                            <span>💬</span>
+                                            <span>Remarks</span>
+                                        </span>
+                                    </label>
+                                    <textarea 
+                                        value={remarks} 
+                                        onChange={(e) => setRemarks(e.target.value)} 
+                                        placeholder="Additional notes or special requirements..." 
+                                        rows="3" 
+                                        className="input-field resize-none"
+                                    />
+                                </div>
+
+                                <button 
+                                    onClick={handleRequestAsset} 
+                                    disabled={loading} 
+                                    className="btn-success w-full flex items-center justify-center gap-2"
+                                >
+                                    {loading ? (
+                                        <>
+                                            <span className="animate-spin">⏳</span>
+                                            <span>Processing...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span>✅</span>
+                                            <span>Submit Request</span>
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Pending Requests */}
+                    {pendingRequests.length > 0 && (
+                        <div className="mb-6">
+                            <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                <span>⏳</span>
+                                <span>Pending Requests for This Asset</span>
+                                <span className="ml-2 badge badge-warning">{pendingRequests.length}</span>
+                            </h3>
+                            <div className="space-y-4">
+                                {pendingRequests.map((request, index) => (
+                                    <div key={index} className="card p-5 border-l-4 border-amber-400">
+                                        <div className="flex items-start justify-between mb-4">
+                                            <div>
+                                                <p className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                                    <span>📋</span>
+                                                    <span>Request #{request.id}</span>
+                                                </p>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <span className={`badge ${request.storeApproved ? 'badge-success' : 'badge-warning'}`}>
+                                                    {request.storeApproved ? '✅ Store' : '⏳ Store'}
+                                                </span>
+                                                <span className={`badge ${request.adminApproved ? 'badge-success' : 'badge-warning'}`}>
+                                                    {request.adminApproved ? '✅ Admin' : '⏳ Admin'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                                            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                                                <span>🏥</span>
+                                                <div>
+                                                    <p className="text-xs text-slate-500">Ward</p>
+                                                    <p className="text-sm font-semibold text-slate-800">{request.wardName}</p>
+                                                </div>
+                                            </div>
+                                            {request.patientId && (
+                                                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                                                    <span>👤</span>
+                                                    <div>
+                                                        <p className="text-xs text-slate-500">Patient</p>
+                                                        <p className="text-sm font-semibold text-slate-800">{request.patientId}</p>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                                                <span>🔢</span>
+                                                <div>
+                                                    <p className="text-xs text-slate-500">Quantity</p>
+                                                    <p className="text-sm font-semibold text-slate-800">{request.requestedQuantity.toString()} units</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        {request.remarks && (
+                                            <div className="mb-4 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                                                <p className="text-xs text-blue-600 font-semibold mb-1">REMARKS</p>
+                                                <p className="text-sm text-slate-700">{request.remarks}</p>
+                                            </div>
+                                        )}
+
+                                        <div className="flex gap-2 flex-wrap">
+                                            {userRole === 'store' && !request.storeApproved && (
+                                                <button 
+                                                    onClick={() => handleStoreApprove(request.id)} 
+                                                    disabled={loading} 
+                                                    className="btn-primary flex items-center gap-2"
+                                                >
+                                                    <span>✅</span>
+                                                    <span>Approve (Store)</span>
+                                                </button>
+                                            )}
+
+                                            {userRole === 'admin' && request.storeApproved && !request.adminApproved && (
+                                                <button 
+                                                    onClick={() => handleAdminApprove(request.id)} 
+                                                    disabled={loading} 
+                                                    className="btn-primary flex items-center gap-2"
+                                                >
+                                                    <span>✅</span>
+                                                    <span>Approve (Admin)</span>
+                                                </button>
+                                            )}
+
+                                            {userRole === 'admin' && request.storeApproved && request.adminApproved && (
+                                                <button 
+                                                    onClick={() => handleIssueAsset(request.id)} 
+                                                    disabled={loading} 
+                                                    className="btn-success flex items-center gap-2"
+                                                >
+                                                    <span>📦</span>
+                                                    <span>Issue Asset</span>
+                                                </button>
+                                            )}
+
+                                            {(userRole === 'admin' || userRole === 'store') && (
+                                                <button 
+                                                    onClick={() => handleCancelRequest(request.id)} 
+                                                    disabled={loading} 
+                                                    className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-sm hover:shadow-md transition-all duration-200 flex items-center gap-2"
+                                                >
+                                                    <span>❌</span>
+                                                    <span>Cancel</span>
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     )}
 
@@ -431,12 +625,20 @@ const Home = ({ home, provider, account, escrow, medicalAsset, togglePop, userRo
                         </div>
                     )}
 
-                    <div className="mt-4 p-3 bg-sky-50 rounded-md">
-                        <p className="text-sm text-sky-700">
-                            {userRole === 'admin' && '👨‍⚕️ You are Hospital Admin - You can approve and issue assets'}
-                            {userRole === 'store' && '📦 You are Store Manager - You can approve ward requests'}
-                            {userRole === 'ward' && '🏥 You are Ward Authority - You can request assets for your ward'}
-                        </p>
+                    {/* Role Info Banner */}
+                    <div className="bg-gradient-to-r from-medical-blue-100 to-medical-teal-100 rounded-xl p-4 border border-medical-blue-200">
+                        <div className="flex items-center gap-3">
+                            <div className="flex-shrink-0 w-10 h-10 bg-white rounded-full flex items-center justify-center text-xl shadow-sm">
+                                {userRole === 'admin' && '👨‍⚕️'}
+                                {userRole === 'store' && '📦'}
+                                {userRole === 'ward' && '🏥'}
+                            </div>
+                            <p className="text-sm font-medium text-medical-blue-900">
+                                {userRole === 'admin' && 'You are Hospital Admin - You can approve and issue assets'}
+                                {userRole === 'store' && 'You are Store Manager - You can approve ward requests'}
+                                {userRole === 'ward' && 'You are Ward Authority - You can request assets for your ward'}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

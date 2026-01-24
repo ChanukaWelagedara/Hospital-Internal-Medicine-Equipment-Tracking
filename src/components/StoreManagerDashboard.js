@@ -205,97 +205,218 @@ const StoreManagerDashboard = ({ escrow, medicalAsset, provider, account, onClos
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60 overflow-auto">
-            <div className="bg-white dark:bg-slate-800 rounded-xl p-6 max-w-6xl w-full max-h-[90vh] overflow-auto relative shadow-xl">
-                <button onClick={onClose} className="absolute top-4 right-4 text-slate-500 hover:text-slate-700 dark:text-slate-300">×</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm overflow-auto animate-fade-in">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 max-w-7xl w-full max-h-[90vh] overflow-auto relative shadow-2xl animate-slide-up">
+                <button 
+                    onClick={onClose} 
+                    className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all duration-200 text-2xl font-light"
+                    title="Close"
+                >
+                    ×
+                </button>
 
-                <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-1">Store Manager Dashboard</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-300 mb-6">Issue medicines/equipment to wards and track your procurement requests</p>
+                {/* Header */}
+                <div className="mb-8">
+                    <div className="flex items-center gap-4 mb-2">
+                        <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-medical-blue-500 to-medical-teal-500 rounded-xl shadow-medical">
+                            <span className="text-3xl">📦</span>
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Store Manager Dashboard</h2>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">Issue medicines/equipment to wards and track your procurement requests</p>
+                        </div>
+                    </div>
+                </div>
 
-                {loading && <p className="text-sm text-slate-500">Loading...</p>}
+                {loading && (
+                    <div className="flex items-center gap-2 p-4 bg-blue-50 rounded-lg border border-blue-200 mb-6">
+                        <span className="animate-spin text-xl">⏳</span>
+                        <span className="text-sm text-blue-700 font-medium">Loading data...</span>
+                    </div>
+                )}
 
                 {!showIssueForm ? (
                     <>
+                        {/* My Procurement Requests Section */}
                         <section className="mb-8">
-                            <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-3 border-b border-slate-100 dark:border-slate-700 pb-3">📦 My Procurement Requests</h3>
+                            <div className="flex items-center gap-3 mb-4 pb-3 border-b-2 border-medical-blue-200">
+                                <span className="text-2xl">📦</span>
+                                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">My Procurement Requests</h3>
+                                <span className="badge badge-info ml-auto">{procurementRequests.length}</span>
+                            </div>
 
                             {procurementRequests.length === 0 ? (
-                                <div className="p-4 text-center bg-slate-50 dark:bg-slate-700 rounded-md text-sm text-slate-500">No procurement requests yet</div>
+                                <div className="card p-8 text-center">
+                                    <div className="text-5xl mb-3">📊</div>
+                                    <p className="text-slate-500 font-medium">No procurement requests yet</p>
+                                    <p className="text-sm text-slate-400 mt-1">Your procurement requests will appear here</p>
+                                </div>
                             ) : (
-                                <div className="grid gap-3">
+                                <div className="grid gap-4">
                                     {procurementRequests.map((request, index) => (
-                                        <div key={index} className="border rounded-md p-4 bg-white dark:bg-slate-700 shadow-sm">
-                                            <div className="flex justify-between items-start mb-2">
+                                        <div key={index} className="card-medical p-5 hover:scale-[1.01] transition-transform duration-200">
+                                            <div className="flex justify-between items-start mb-4">
                                                 <div className="flex-1">
-                                                    <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">{request.itemName}</h4>
-                                                    <div className="flex gap-2 flex-wrap mb-2">
-                                                        <span className="text-xs px-2 py-1 rounded-full bg-sky-100 text-sky-700">{request.itemType.toUpperCase()}</span>
-                                                        <span className="text-xs px-2 py-1 rounded-full" style={{background: request.statusColor, color: 'white'}}>{request.status}</span>
-                                                        <span className="text-xs px-2 py-1 rounded-full bg-amber-50 text-amber-700">{request.urgency}</span>
+                                                    <h4 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2 flex items-center gap-2">
+                                                        <span>{request.itemType === 'medicine' ? '💊' : '🏥'}</span>
+                                                        <span>{request.itemName}</span>
+                                                    </h4>
+                                                    <div className="flex gap-2 flex-wrap mb-3">
+                                                        <span className="badge badge-info">{request.itemType.toUpperCase()}</span>
+                                                        <span className={`badge ${request.isApproved ? 'badge-success' : request.isRejected ? 'badge-danger' : 'badge-warning'}`}>
+                                                            {request.isApproved ? '✅ Approved' : request.isRejected ? '❌ Rejected' : '⏳ Pending'}
+                                                        </span>
+                                                        <span 
+                                                            className="badge" 
+                                                            style={{
+                                                                background: request.urgency === 'critical' ? '#dc2626' : request.urgency === 'high' ? '#ea580c' : request.urgency === 'normal' ? '#2563eb' : '#16a34a',
+                                                                color: 'white'
+                                                            }}
+                                                        >
+                                                            {request.urgency === 'critical' ? '🔴' : request.urgency === 'high' ? '🟠' : request.urgency === 'low' ? '🟢' : '🔵'} {request.urgency.toUpperCase()}
+                                                        </span>
                                                     </div>
-                                                    <div className="grid grid-cols-2 gap-2 text-xs text-slate-500">
-                                                        <div><strong>Quantity:</strong> {request.quantity} units</div>
-                                                        <div><strong>Requested:</strong> {request.requestTimestamp}</div>
-                                                        {request.approvedTimestamp && <div className="col-span-2"><strong>Processed:</strong> {request.approvedTimestamp}</div>}
-                                                    </div>
-                                                    {request.hospitalResponse && (
-                                                        <div className={`mt-3 p-3 rounded-md ${request.isApproved ? 'bg-emerald-50 border-emerald-200' : 'bg-rose-50 border-rose-200'}`} style={{borderLeft: `4px solid ${request.statusColor}`}}>
-                                                            <strong className="text-sm text-slate-800">Hospital Response:</strong>
-                                                            <p className="mt-1 text-sm text-slate-700">{request.hospitalResponse}</p>
-                                                        </div>
-                                                    )}
                                                 </div>
                                             </div>
+                                            
+                                            <div className="grid grid-cols-2 gap-3 mb-3">
+                                                <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
+                                                    <span>🔢</span>
+                                                    <div>
+                                                        <p className="text-xs text-slate-500">Quantity</p>
+                                                        <p className="text-sm font-semibold text-slate-800">{request.quantity} units</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
+                                                    <span>📅</span>
+                                                    <div>
+                                                        <p className="text-xs text-slate-500">Requested</p>
+                                                        <p className="text-sm font-semibold text-slate-800">{request.requestTimestamp}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            {request.hospitalResponse && (
+                                                <div className={`mt-3 p-4 rounded-lg border-l-4 ${request.isApproved ? 'bg-emerald-50 border-emerald-500' : 'bg-rose-50 border-rose-500'}`}>
+                                                    <p className="text-xs font-bold text-slate-600 uppercase mb-1">Hospital Response</p>
+                                                    <p className="text-sm text-slate-700">{request.hospitalResponse}</p>
+                                                    {request.approvedTimestamp && (
+                                                        <p className="text-xs text-slate-500 mt-2">Processed: {request.approvedTimestamp}</p>
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
                             )}
                         </section>
 
+                        {/* Ward Requests Section */}
                         <section>
-                            <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-3 border-b border-slate-100 dark:border-slate-700 pb-3">🏥 Ward Requests to Process</h3>
+                            <div className="flex items-center gap-3 mb-4 pb-3 border-b-2 border-medical-teal-200">
+                                <span className="text-2xl">🏥</span>
+                                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">Ward Requests to Process</h3>
+                                <span className="badge badge-warning ml-auto">{wardRequests.length}</span>
+                            </div>
 
                             {wardRequests.length === 0 ? (
-                                <div className="p-8 text-center bg-slate-50 dark:bg-slate-700 rounded-md text-slate-500">
-                                    <p className="text-lg">✓ No pending requests</p>
-                                    <p className="text-sm">All ward requests have been processed</p>
+                                <div className="card p-12 text-center">
+                                    <div className="text-6xl mb-4">✅</div>
+                                    <p className="text-lg font-semibold text-slate-700 mb-2">All Clear!</p>
+                                    <p className="text-sm text-slate-500">No pending ward requests at the moment</p>
                                 </div>
                             ) : (
-                                <div className="grid gap-4">
+                                <div className="grid gap-5">
                                     {wardRequests.map((request, index) => (
-                                        <div key={index} className={`border rounded-md p-4 ${request.storeApproved ? 'bg-emerald-50' : 'bg-amber-50'}`}>
-                                            <div className="flex justify-between items-start mb-3">
-                                                <div>
-                                                    <h3 className="text-md font-semibold text-slate-900">{request.assetName}</h3>
-                                                    <div className="grid grid-cols-2 gap-2 text-sm text-slate-600 mt-2">
-                                                        <div><strong>Type:</strong> {request.itemType}</div>
-                                                        <div><strong>Requested By:</strong> {request.wardName}</div>
-                                                        <div><strong>Patient ID:</strong> {request.patientId || 'N/A'}</div>
-                                                        <div><strong>Quantity:</strong> {request.quantity} units</div>
-                                                        <div><strong>Available:</strong> {request.availableQuantity} units</div>
-                                                        <div><strong>Requested:</strong> {request.timestamp}</div>
+                                        <div key={index} className={`card-medical p-6 border-l-4 ${request.storeApproved ? 'border-emerald-500 bg-emerald-50/50' : 'border-amber-500 bg-amber-50/50'}`}>
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-3 mb-3">
+                                                        <span className="text-2xl">{request.itemType === 'Medicine' ? '💊' : '🏥'}</span>
+                                                        <div>
+                                                            <h3 className="text-lg font-bold text-slate-900">{request.assetName}</h3>
+                                                            <span className="badge badge-info text-xs">{request.itemType}</span>
+                                                        </div>
                                                     </div>
-                                                    {request.remarks && <p className="mt-2 text-sm text-slate-500"><strong>Remarks:</strong> {request.remarks}</p>}
+                                                    
+                                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
+                                                        <div className="flex items-center gap-2 p-3 bg-white rounded-lg shadow-sm">
+                                                            <span>🏥</span>
+                                                            <div>
+                                                                <p className="text-xs text-slate-500">Ward</p>
+                                                                <p className="text-sm font-semibold text-slate-800">{request.wardName}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 p-3 bg-white rounded-lg shadow-sm">
+                                                            <span>👤</span>
+                                                            <div>
+                                                                <p className="text-xs text-slate-500">Patient ID</p>
+                                                                <p className="text-sm font-semibold text-slate-800">{request.patientId || 'N/A'}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 p-3 bg-white rounded-lg shadow-sm">
+                                                            <span>🔢</span>
+                                                            <div>
+                                                                <p className="text-xs text-slate-500">Quantity</p>
+                                                                <p className="text-sm font-semibold text-slate-800">{request.quantity} units</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 p-3 bg-white rounded-lg shadow-sm">
+                                                            <span>📦</span>
+                                                            <div>
+                                                                <p className="text-xs text-slate-500">Available Stock</p>
+                                                                <p className={`text-sm font-bold ${request.availableQuantity >= request.quantity ? 'text-medical-green-600' : 'text-red-600'}`}>
+                                                                    {request.availableQuantity} units
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 p-3 bg-white rounded-lg shadow-sm col-span-2">
+                                                            <span>📅</span>
+                                                            <div>
+                                                                <p className="text-xs text-slate-500">Requested On</p>
+                                                                <p className="text-sm font-semibold text-slate-800">{request.timestamp}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    {request.remarks && (
+                                                        <div className="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400 mb-3">
+                                                            <p className="text-xs text-blue-600 font-semibold mb-1">REMARKS</p>
+                                                            <p className="text-sm text-slate-700">{request.remarks}</p>
+                                                        </div>
+                                                    )}
                                                 </div>
 
-                                                <div className="flex flex-col gap-2 items-end">
+                                                <div className="flex flex-col gap-2 items-end ml-4">
                                                     {request.storeApproved ? (
-                                                        <span className="px-3 py-1 rounded-md bg-emerald-500 text-white text-sm font-semibold">✓ You Approved</span>
+                                                        <span className="badge badge-success flex items-center gap-1">
+                                                            <span>✅</span>
+                                                            <span>You Approved</span>
+                                                        </span>
                                                     ) : (
-                                                        <span className="px-3 py-1 rounded-md bg-amber-500 text-white text-sm font-semibold">Pending Your Approval</span>
+                                                        <span className="badge badge-warning flex items-center gap-1 animate-pulse">
+                                                            <span>⏳</span>
+                                                            <span>Pending Approval</span>
+                                                        </span>
                                                     )}
                                                 </div>
                                             </div>
 
-                                            <div className="flex gap-3 mt-2">
-                                                {!request.issued && (
-                                                    <button onClick={() => handleIssueClick(request)} disabled={request.availableQuantity < request.quantity} className={`px-4 py-2 rounded-md text-white font-semibold ${request.availableQuantity >= request.quantity ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-400 cursor-not-allowed'}`}>
-                                                        📦 Issue to Ward
+                                            <div className="flex gap-3 mt-4 pt-4 border-t border-slate-200">
+                                                {!request.issued && request.availableQuantity >= request.quantity ? (
+                                                    <button 
+                                                        onClick={() => handleIssueClick(request)} 
+                                                        className="btn-primary flex items-center gap-2"
+                                                    >
+                                                        <span>📦</span>
+                                                        <span>Issue to Ward</span>
                                                     </button>
-                                                )}
-                                                {request.availableQuantity < request.quantity && (
-                                                    <span className="text-sm text-rose-600 self-center">⚠️ Insufficient stock - Request from Hospital Authority</span>
-                                                )}
+                                                ) : !request.issued ? (
+                                                    <div className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 rounded-lg border border-red-200">
+                                                        <span>⚠️</span>
+                                                        <span className="text-sm font-semibold">Insufficient stock - Request from Hospital Authority</span>
+                                                    </div>
+                                                ) : null}
                                             </div>
                                         </div>
                                     ))}

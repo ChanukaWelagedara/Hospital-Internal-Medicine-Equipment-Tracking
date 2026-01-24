@@ -148,85 +148,171 @@ const HospitalProcurementDashboard = ({ provider, account, escrow, onClose }) =>
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60 overflow-auto">
-            <div className="bg-white dark:bg-slate-800 rounded-xl p-6 max-w-7xl w-full max-h-[90vh] overflow-auto relative shadow-xl">
-                <button onClick={onClose} className="absolute top-4 right-4 text-slate-500 hover:text-slate-700 dark:text-slate-300">×</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm overflow-auto animate-fade-in">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 max-w-7xl w-full max-h-[90vh] overflow-auto relative shadow-2xl animate-slide-up">
+                <button 
+                    onClick={onClose} 
+                    className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all duration-200 text-2xl font-light"
+                    title="Close"
+                >
+                    ×
+                </button>
 
-                <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-1">📦 Procurement Requests from Store Manager</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-300 mb-6">Review and approve stock requests from the Store Manager</p>
+                {/* Header */}
+                <div className="mb-8">
+                    <div className="flex items-center gap-4 mb-2">
+                        <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-medical-blue-500 to-indigo-600 rounded-xl shadow-medical">
+                            <span className="text-3xl">👨‍⚕️</span>
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Procurement Requests</h2>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">Review and approve stock requests from the Store Manager</p>
+                        </div>
+                    </div>
+                </div>
 
                 {loading && procurementRequests.length === 0 ? (
-                    <p className="text-center p-10 text-slate-500">Loading procurement requests...</p>
+                    <div className="flex items-center justify-center gap-3 p-12 bg-blue-50 rounded-xl border border-blue-200">
+                        <span className="animate-spin text-2xl">⏳</span>
+                        <span className="text-blue-700 font-medium">Loading procurement requests...</span>
+                    </div>
                 ) : procurementRequests.length === 0 ? (
-                    <div className="text-center p-12 bg-slate-50 dark:bg-slate-700 rounded-md">
-                        <p className="text-lg text-slate-500 mb-2">No pending procurement requests</p>
-                        <p className="text-sm text-slate-400">Store Manager hasn't submitted any stock requests yet</p>
+                    <div className="card p-16 text-center">
+                        <div className="text-7xl mb-4">📊</div>
+                        <p className="text-xl font-semibold text-slate-700 mb-2">No Procurement Requests</p>
+                        <p className="text-sm text-slate-500">Store Manager hasn't submitted any stock requests yet</p>
                     </div>
                 ) : (
-                    <div className="grid gap-4">
+                    <div className="space-y-5">
                         {procurementRequests.map((request) => (
-                            <div key={request.id} className="border rounded-md p-4 bg-white dark:bg-slate-700 shadow-sm">
-                                <div className="flex justify-between items-start mb-3">
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">{request.itemName}</h3>
-                                        <div className="flex gap-2 flex-wrap mb-2">
-                                            <span className="px-2 py-1 rounded-full text-xs bg-sky-100 text-sky-700">{request.itemType.toUpperCase()}</span>
-                                            <span className="px-2 py-1 rounded-full text-xs" style={{background: getUrgencyColor(request.urgency), color: 'white'}}>{request.urgency.toUpperCase()}</span>
-                                            <span className="px-2 py-1 rounded-full text-xs bg-amber-50 text-amber-700">{getReasonLabel(request.reason)}</span>
-                                            <span className="px-2 py-1 rounded-full text-xs" style={{background: request.statusColor, color: 'white'}}>{request.statusIcon} {request.status}</span>
+                            <div key={request.id} className={`card-medical p-6 border-l-4 ${
+                                request.isApproved ? 'border-emerald-500 bg-emerald-50/30' :
+                                request.isRejected ? 'border-red-500 bg-red-50/30' :
+                                'border-amber-500 bg-amber-50/30'
+                            } hover:scale-[1.01] transition-transform duration-200`}>
+                                {/* Header */}
+                                <div className="flex justify-between items-start mb-5">
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <span className="text-2xl">{request.itemType === 'medicine' ? '💊' : '🏥'}</span>
+                                            <div>
+                                                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">{request.itemName}</h3>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2 flex-wrap">
+                                            <span className="badge badge-info">{request.itemType.toUpperCase()}</span>
+                                            <span 
+                                                className="badge" 
+                                                style={{
+                                                    background: getUrgencyColor(request.urgency), 
+                                                    color: 'white'
+                                                }}
+                                            >
+                                                {request.urgency === 'critical' ? '🔴' : request.urgency === 'high' ? '🟠' : request.urgency === 'low' ? '🟢' : '🔵'} {request.urgency.toUpperCase()}
+                                            </span>
+                                            <span className="badge badge-warning">{getReasonLabel(request.reason)}</span>
+                                            <span className={`badge flex items-center gap-1 ${
+                                                request.isApproved ? 'badge-success' :
+                                                request.isRejected ? 'badge-danger' :
+                                                'badge-warning'
+                                            }`}>
+                                                {request.statusIcon} {request.status}
+                                            </span>
                                         </div>
                                     </div>
-                                    <span className="px-3 py-1 rounded-md bg-slate-100 dark:bg-slate-600 text-slate-700 dark:text-slate-100 font-semibold">Request #{request.id}</span>
+                                    <span className="badge badge-info text-sm">Request #{request.id}</span>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-                                    <div>
-                                        <strong className="text-xs text-slate-500">Requested Quantity:</strong>
-                                        <p className="mt-1 text-lg font-semibold text-slate-900">{request.quantity} units</p>
+                                {/* Details Grid */}
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                    <div className="flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm">
+                                        <span className="text-2xl">🔢</span>
+                                        <div>
+                                            <p className="text-xs text-slate-500 uppercase tracking-wide">Requested Quantity</p>
+                                            <p className="text-xl font-bold text-medical-blue-700">{request.quantity} units</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <strong className="text-xs text-slate-500">Requested By:</strong>
-                                        <p className="mt-1 text-sm font-mono text-slate-900">{request.storeManager.slice(0, 6)}...{request.storeManager.slice(-4)}</p>
+                                    <div className="flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm">
+                                        <span className="text-2xl">👤</span>
+                                        <div>
+                                            <p className="text-xs text-slate-500 uppercase tracking-wide">Requested By</p>
+                                            <p className="text-sm font-mono font-semibold text-slate-800">{request.storeManager.slice(0, 6)}...{request.storeManager.slice(-4)}</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <strong className="text-xs text-slate-500">Request Date:</strong>
-                                        <p className="mt-1 text-sm text-slate-900">{request.requestTimestamp}</p>
+                                    <div className="flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm">
+                                        <span className="text-2xl">📅</span>
+                                        <div>
+                                            <p className="text-xs text-slate-500 uppercase tracking-wide">Request Date</p>
+                                            <p className="text-sm font-semibold text-slate-800">{request.requestTimestamp}</p>
+                                        </div>
                                     </div>
                                 </div>
 
+                                {/* Approval Timestamp */}
                                 {request.approvedTimestamp && (
-                                    <div className="bg-emerald-50 p-3 rounded-md mb-3 border border-emerald-200">
-                                        <strong className="text-sm text-emerald-700">✓ Approved on:</strong>
-                                        <p className="mt-1 text-sm text-emerald-800">{request.approvedTimestamp}</p>
+                                    <div className="bg-gradient-to-r from-emerald-100 to-emerald-50 p-4 rounded-lg mb-4 border border-emerald-300">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-lg">✅</span>
+                                            <div>
+                                                <p className="text-sm font-bold text-emerald-800">Approved</p>
+                                                <p className="text-xs text-emerald-700">{request.approvedTimestamp}</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
 
+                                {/* Hospital Response */}
                                 {request.hospitalResponse && (
-                                    <div className="bg-slate-50 p-3 rounded-md mb-3">
-                                        <strong className="text-sm text-slate-500">Hospital Response:</strong>
-                                        <p className="mt-1 text-sm text-slate-900">{request.hospitalResponse}</p>
+                                    <div className="bg-slate-50 p-4 rounded-lg mb-4 border-l-4 border-medical-blue-500">
+                                        <p className="text-xs text-medical-blue-600 font-bold uppercase tracking-wide mb-1">Hospital Response</p>
+                                        <p className="text-sm text-slate-700">{request.hospitalResponse}</p>
                                     </div>
                                 )}
 
+                                {/* Additional Notes */}
                                 {request.additionalNotes && (
-                                    <div className="bg-slate-50 p-3 rounded-md mb-3">
-                                        <strong className="text-sm text-slate-500">Additional Notes:</strong>
-                                        <p className="mt-1 text-sm text-slate-900">{request.additionalNotes}</p>
+                                    <div className="bg-blue-50 p-4 rounded-lg mb-4 border-l-4 border-blue-400">
+                                        <p className="text-xs text-blue-600 font-bold uppercase tracking-wide mb-1">Additional Notes</p>
+                                        <p className="text-sm text-slate-700">{request.additionalNotes}</p>
                                     </div>
                                 )}
 
-                                <div className="flex gap-3 mt-2">
+                                {/* Action Buttons */}
+                                <div className="flex gap-3 mt-5 pt-4 border-t border-slate-200">
                                     {request.isPending && (
                                         <>
-                                            <button onClick={() => handleApproveClick(request.id)} disabled={loading} className="px-4 py-2 rounded-md bg-emerald-600 text-white font-semibold">✓ Approve Request</button>
-                                            <button onClick={() => handleRejectClick(request.id)} disabled={loading} className="px-4 py-2 rounded-md bg-rose-600 text-white font-semibold">✗ Reject Request</button>
+                                            <button 
+                                                onClick={() => handleApproveClick(request.id)} 
+                                                disabled={loading} 
+                                                className="btn-success flex items-center gap-2"
+                                            >
+                                                <span>✅</span>
+                                                <span>Approve Request</span>
+                                            </button>
+                                            <button 
+                                                onClick={() => handleRejectClick(request.id)} 
+                                                disabled={loading} 
+                                                className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-sm hover:shadow-md transition-all duration-200 flex items-center gap-2"
+                                            >
+                                                <span>❌</span>
+                                                <span>Reject Request</span>
+                                            </button>
                                         </>
                                     )}
                                     {request.isApproved && (
-                                        <button onClick={() => alert('Procurement will be issued. Stock will be delivered to the store.')} className="px-4 py-2 rounded-md bg-emerald-500 text-white font-semibold">📦 Issue Procurement Order</button>
+                                        <button 
+                                            onClick={() => alert('Procurement will be issued. Stock will be delivered to the store.')} 
+                                            className="btn-primary flex items-center gap-2"
+                                        >
+                                            <span>📦</span>
+                                            <span>Issue Procurement Order</span>
+                                        </button>
                                     )}
                                     {request.isRejected && (
-                                        <span className="px-4 py-2 rounded-md bg-rose-50 text-rose-700 font-semibold">Request was rejected</span>
+                                        <div className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 rounded-lg border border-red-200">
+                                            <span>❌</span>
+                                            <span className="font-semibold">Request was rejected</span>
+                                        </div>
                                     )}
                                 </div>
                             </div>
@@ -235,14 +321,74 @@ const HospitalProcurementDashboard = ({ provider, account, escrow, onClose }) =>
                 )}
 
                 {showResponseModal && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-                        <div className="bg-white dark:bg-slate-800 p-6 rounded-md max-w-lg w-full">
-                            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{responseData.action === 'approve' ? 'Approve Request' : 'Reject Request'}</h3>
-                            <p className="text-sm text-slate-500 mb-3">{responseData.action === 'approve' ? 'Provide approval details and expected delivery timeline:' : 'Provide reason for rejection:'}</p>
-                            <textarea value={responseData.response} onChange={(e) => setResponseData({ ...responseData, response: e.target.value })} placeholder={responseData.action === 'approve' ? 'e.g., Approved. Items will be added to inventory within 3 business days.' : 'e.g., Budget constraints. Please resubmit next quarter.'} className="w-full p-3 border rounded-md min-h-[100px] mb-4 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100" />
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm animate-fade-in">
+                        <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl max-w-lg w-full shadow-2xl animate-slide-up">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                                    responseData.action === 'approve' 
+                                        ? 'bg-gradient-to-br from-emerald-500 to-emerald-600' 
+                                        : 'bg-gradient-to-br from-red-500 to-red-600'
+                                }`}>
+                                    <span className="text-2xl">{responseData.action === 'approve' ? '✅' : '❌'}</span>
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+                                        {responseData.action === 'approve' ? 'Approve Request' : 'Reject Request'}
+                                    </h3>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                                        {responseData.action === 'approve' 
+                                            ? 'Provide approval details and expected delivery timeline' 
+                                            : 'Provide reason for rejection'}
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div className="mb-6">
+                                <label className="label mb-2">
+                                    <span className="flex items-center gap-2">
+                                        <span>💬</span>
+                                        <span>Response Message</span>
+                                    </span>
+                                </label>
+                                <textarea 
+                                    value={responseData.response} 
+                                    onChange={(e) => setResponseData({ ...responseData, response: e.target.value })} 
+                                    placeholder={responseData.action === 'approve' 
+                                        ? 'e.g., Approved. Items will be added to inventory within 3 business days.' 
+                                        : 'e.g., Budget constraints. Please resubmit next quarter.'} 
+                                    className="input-field resize-none" 
+                                    rows="4"
+                                />
+                            </div>
+                            
                             <div className="flex justify-end gap-3">
-                                <button onClick={() => { setShowResponseModal(false); setActiveRequestId(null); setResponseData({}); }} className="px-4 py-2 rounded-md bg-slate-200">Cancel</button>
-                                <button onClick={handleSubmitResponse} disabled={loading} className={`px-4 py-2 rounded-md text-white ${responseData.action === 'approve' ? 'bg-emerald-600' : 'bg-rose-600'}`}>{loading ? 'Processing...' : 'Confirm'}</button>
+                                <button 
+                                    onClick={() => { setShowResponseModal(false); setActiveRequestId(null); setResponseData({}); }} 
+                                    className="px-5 py-2.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold transition-all duration-200"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    onClick={handleSubmitResponse} 
+                                    disabled={loading} 
+                                    className={`px-5 py-2.5 rounded-lg text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2 ${
+                                        responseData.action === 'approve' 
+                                            ? 'bg-emerald-600 hover:bg-emerald-700' 
+                                            : 'bg-red-600 hover:bg-red-700'
+                                    }`}
+                                >
+                                    {loading ? (
+                                        <>
+                                            <span className="animate-spin">⏳</span>
+                                            <span>Processing...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span>{responseData.action === 'approve' ? '✅' : '❌'}</span>
+                                            <span>Confirm {responseData.action === 'approve' ? 'Approval' : 'Rejection'}</span>
+                                        </>
+                                    )}
+                                </button>
                             </div>
                         </div>
                     </div>

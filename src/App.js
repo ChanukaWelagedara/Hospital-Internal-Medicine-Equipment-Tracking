@@ -178,46 +178,165 @@ function App() {
         provider={provider}
       />
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
-
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
-          <h3 className="text-lg font-semibold">Hospital Inventory - Medicines & Equipment</h3>
+      {/* Main Content */}
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50">
+        <div className="max-w-7xl mx-auto px-6 py-8">
           
-          <div className="flex gap-2">
-            {/* Hospital Authority (Admin) can add new assets */}
-            {userRole === 'admin' && (
-              <>
-                <button onClick={() => setShowAddAsset(true)} className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-md font-semibold">+ Add Medicine/Equipment</button>
-                <button onClick={() => setShowHospitalProcurement(true)} className="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-md font-semibold">📦 View Procurement Requests</button>
-              </>
-            )}
-            
-            {/* Store Manager specific actions */}
-            {userRole === 'store' && (
-              <>
-                <button onClick={() => setShowStoreManagerDashboard(true)} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-semibold">📋 View Ward Requests</button>
-                <button onClick={() => setShowRequestFromHospital(true)} className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-md font-semibold">📦 Request Stock from Hospital</button>
-              </>
-            )}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {assets.map((asset, index) => (
-            <div key={index} onClick={() => togglePop(asset)} className="cursor-pointer group">
-              <div className="p-4 bg-white dark:bg-slate-700 rounded-lg border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition">
-                <h4 className="text-md font-semibold text-slate-900 dark:text-slate-100">{asset.name}</h4>
-                <p className="text-sm text-slate-600 dark:text-slate-300"><strong>Type:</strong> {asset.itemType || asset.attributes?.find(a => a.trait_type === "Item Type")?.value || 'Medicine'}</p>
-                <p className="text-sm text-slate-600 dark:text-slate-300"><strong>Batch/Serial:</strong> {asset.attributes?.find(a => a.trait_type === "Batch ID" || a.trait_type === "Serial Number")?.value || 'N/A'}</p>
-                <p className="text-sm text-slate-600 dark:text-slate-300"><strong>Available:</strong> {asset.remainingQuantity} / {asset.totalQuantity} units</p>
-                {asset.attributes?.find(a => a.trait_type === "Expiry Date") && (
-                  <p className="text-sm text-slate-600 dark:text-slate-300"><strong>Expiry:</strong> {asset.attributes.find(a => a.trait_type === "Expiry Date").value}</p>
+          {/* Page Header with Actions */}
+          <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-slate-200">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div>
+                <h3 className="text-2xl font-bold text-slate-900 mb-1 flex items-center gap-3">
+                  <span className="text-3xl">🏭</span>
+                  <span>Hospital Inventory</span>
+                </h3>
+                <p className="text-sm text-slate-600">Medicines & Equipment Management System</p>
+              </div>
+              
+              {/* Action Buttons */}
+              <div className="flex flex-wrap gap-3">
+                {/* Hospital Authority (Admin) can add new assets */}
+                {userRole === 'admin' && (
+                  <>
+                    <button 
+                      onClick={() => setShowAddAsset(true)} 
+                      className="btn-success flex items-center gap-2"
+                    >
+                      <span>➕</span>
+                      <span>Add Asset</span>
+                    </button>
+                    <button 
+                      onClick={() => setShowHospitalProcurement(true)} 
+                      className="btn-primary flex items-center gap-2"
+                    >
+                      <span>📦</span>
+                      <span>Procurement Requests</span>
+                    </button>
+                  </>
+                )}
+                
+                {/* Store Manager specific actions */}
+                {userRole === 'store' && (
+                  <>
+                    <button 
+                      onClick={() => setShowStoreManagerDashboard(true)} 
+                      className="btn-primary flex items-center gap-2"
+                    >
+                      <span>📋</span>
+                      <span>Ward Requests</span>
+                    </button>
+                    <button 
+                      onClick={() => setShowRequestFromHospital(true)} 
+                      className="btn-secondary flex items-center gap-2"
+                    >
+                      <span>📝</span>
+                      <span>Request Stock</span>
+                    </button>
+                  </>
                 )}
               </div>
             </div>
-          ))}
-        </div>
+          </div>
 
+          {/* Assets Grid */}
+          {assets.length === 0 ? (
+            <div className="card p-16 text-center">
+              <div className="text-7xl mb-4">🏭</div>
+              <p className="text-xl font-semibold text-slate-700 mb-2">No Assets Yet</p>
+              <p className="text-sm text-slate-500 mb-6">Start by adding medicines or equipment to your inventory</p>
+              {userRole === 'admin' && (
+                <button 
+                  onClick={() => setShowAddAsset(true)} 
+                  className="btn-primary inline-flex items-center gap-2"
+                >
+                  <span>➕</span>
+                  <span>Add First Asset</span>
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {assets.map((asset, index) => {
+                const expiryAttr = asset.attributes?.find(a => a.trait_type === "Expiry Date");
+                const batchSerial = asset.attributes?.find(a => a.trait_type === "Batch ID" || a.trait_type === "Serial Number");
+                const stockPercentage = (asset.remainingQuantity / asset.totalQuantity) * 100;
+                const isLowStock = stockPercentage < 30;
+                
+                return (
+                  <div 
+                    key={index} 
+                    onClick={() => togglePop(asset)} 
+                    className="card-medical cursor-pointer group hover:scale-105 transition-all duration-300 overflow-hidden"
+                  >
+                    {/* Card Header */}
+                    <div className="bg-gradient-to-br from-medical-blue-500 to-medical-teal-500 p-4 -m-6 mb-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-4xl">{asset.itemType === 'Medicine' ? '💊' : '🏥'}</span>
+                        <span className={`badge ${isLowStock ? 'bg-amber-500' : 'bg-white/20'} text-white text-xs`}>
+                          {isLowStock ? '⚠️ Low Stock' : '✅ In Stock'}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Card Body */}
+                    <div className="space-y-3">
+                      <h4 className="text-lg font-bold text-slate-900 dark:text-slate-100 line-clamp-2 min-h-[3.5rem]">
+                        {asset.name}
+                      </h4>
+                      
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-sm">
+                          <span className="badge badge-info text-xs">{asset.itemType || 'Medicine'}</span>
+                        </div>
+                        
+                        {batchSerial && (
+                          <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <span>🏷️</span>
+                            <span className="font-mono text-xs">{batchSerial.value}</span>
+                          </div>
+                        )}
+                        
+                        {/* Stock Progress Bar */}
+                        <div>
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="text-xs text-slate-600 font-semibold">Available Stock</span>
+                            <span className="text-xs font-bold text-medical-blue-700">
+                              {asset.remainingQuantity}/{asset.totalQuantity}
+                            </span>
+                          </div>
+                          <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                            <div 
+                              className={`h-full rounded-full transition-all duration-300 ${
+                                stockPercentage > 50 ? 'bg-medical-green-500' :
+                                stockPercentage > 30 ? 'bg-amber-500' :
+                                'bg-red-500'
+                              }`}
+                              style={{ width: `${stockPercentage}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                        
+                        {expiryAttr && (
+                          <div className="flex items-center gap-2 text-xs text-slate-600 bg-amber-50 px-3 py-2 rounded-lg border border-amber-200">
+                            <span>📅</span>
+                            <span>Expires: <strong>{expiryAttr.value}</strong></span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* View Details Button */}
+                      <button className="w-full mt-4 py-2 bg-slate-100 hover:bg-medical-blue-100 text-medical-blue-700 rounded-lg font-semibold text-sm transition-colors duration-200 flex items-center justify-center gap-2">
+                        <span>👁️</span>
+                        <span>View Details</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+        </div>
       </div>
 
       {console.log('showAddAsset state:', showAddAsset)}
