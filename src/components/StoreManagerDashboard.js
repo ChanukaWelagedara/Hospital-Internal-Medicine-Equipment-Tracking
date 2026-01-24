@@ -4,6 +4,7 @@ const StoreManagerDashboard = ({ escrow, medicalAsset, provider, account, onClos
     const [wardRequests, setWardRequests] = useState([]);
     const [procurementRequests, setProcurementRequests] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [wardRequestFilter, setWardRequestFilter] = useState('pending'); // 'pending', 'completed', 'all'
     const [issueFormData, setIssueFormData] = useState({
         requestId: null,
         wardName: '',
@@ -77,14 +78,14 @@ const StoreManagerDashboard = ({ escrow, medicalAsset, provider, account, onClos
             setLoading(true);
             console.log('Loading ward requests...');
             
-            // Get all pending request IDs from the blockchain
-            const pendingRequestIds = await escrow.getPendingRequests();
-            console.log('Pending request IDs:', pendingRequestIds);
+            // Get request counter to load all requests
+            const requestCounter = await escrow.requestCounter();
+            console.log('Total requests:', requestCounter.toNumber());
             
             const requests = [];
-            for (let i = 0; i < pendingRequestIds.length; i++) {
-                const requestId = pendingRequestIds[i].toNumber();
-                const request = await escrow.issuanceRequests(requestId);
+            for (let i = 1; i <= requestCounter.toNumber(); i++) {
+                const request = await escrow.issuanceRequests(i);
+                const requestId = i;
                 
                 // Get asset details
                 const assetInfo = await medicalAsset.getAssetInfo(request.assetId.toNumber());
@@ -108,6 +109,9 @@ const StoreManagerDashboard = ({ escrow, medicalAsset, provider, account, onClos
                     console.error('Error parsing metadata:', e);
                 }
                 
+                const isPending = request.isPending;
+                const isCompleted = request.isIssued;
+                
                 requests.push({
                     requestId,
                     assetId: request.assetId.toNumber(),
@@ -120,6 +124,8 @@ const StoreManagerDashboard = ({ escrow, medicalAsset, provider, account, onClos
                     storeApproved: request.storeApproved,
                     adminApproved: request.adminApproved,
                     issued: request.isIssued,
+                    isPending: isPending,
+                    isCompleted: isCompleted,
                     timestamp: new Date(request.requestTimestamp.toNumber() * 1000).toLocaleString(),
                     itemType: assetInfo.itemType === 0 ? 'Medicine' : 'Equipment',
                     availableQuantity: assetInfo.remainingQuantity.toNumber()
@@ -315,19 +321,70 @@ const StoreManagerDashboard = ({ escrow, medicalAsset, provider, account, onClos
                         <section>
                             <div className="flex items-center gap-3 mb-4 pb-3 border-b-2 border-medical-teal-200">
                                 <span className="text-2xl">🏥</span>
-                                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">Ward Requests to Process</h3>
-                                <span className="badge badge-warning ml-auto">{wardRequests.length}</span>
+                                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100">Ward Requests</h3>
+                                <span className="badge badge-info ml-auto">{wardRequests.length} Total</span>
                             </div>
 
-                            {wardRequests.length === 0 ? (
-                                <div className="card p-12 text-center">
-                                    <div className="text-6xl mb-4">✅</div>
-                                    <p className="text-lg font-semibold text-slate-700 mb-2">All Clear!</p>
-                                    <p className="text-sm text-slate-500">No pending ward requests at the moment</p>
-                                </div>
-                            ) : (
-                                <div className="grid gap-5">
-                                    {wardRequests.map((request, index) => (
+                            {/* Filter Tabs */}
+                            <div className="flex gap-3 mb-6">
+                                <button
+                                    onClick={() => setWardRequestFilter('pending')}
+                                    className={`px-6 py-2.5 rounded-lg font-semibold transition-all duration-200 ${
+                                        wardRequestFilter === 'pending'
+                                            ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg'
+                                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                    }`}
+                                >
+                                    Pending ({wardRequests.filter(r => r.isPending).length})
+                                </button>
+                                <button
+                                    onClick={() => setWardRequestFilter('completed')}
+                                    className={`px-6 py-2.5 rounded-lg font-semibold transition-all duration-200 ${
+                                        wardRequestFilter === 'completed'
+                                            ? 'bg-gradient-to-r from-emerald-500 to-green-500 text-white shadow-lg'
+                                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                    }`}
+                                >
+                                    Completed ({wardRequests.filter(r => r.isCompleted).length})
+                                </button>
+                                <button
+                                    onClick={() => setWardRequestFilter('all')}
+                                    className={`px-6 py-2.5 rounded-lg font-semibold transition-all duration-200 ${
+                                        wardRequestFilter === 'all'
+                                            ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg'
+                                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                    }`}
+                                >
+                                    All ({wardRequests.length})
+                                </button>
+                            </div>
+
+                            {(() => {
+                                const filteredRequests = wardRequests.filter(request => {
+                                    if (wardRequestFilter === 'pending') return request.isPending;
+                                    if (wardRequestFilter === 'completed') return request.isCompleted;
+                                    return true; // 'all'
+                                });
+
+                                return filteredRequests.length === 0 ? (
+                                    <div className="card p-12 text-center">
+                                        <div className="text-6xl mb-4">
+                                            {wardRequestFilter === 'pending' ? '✅' : wardRequestFilter === 'completed' ? '📋' : '📦'}
+                                        </div>
+                                        <p className="text-lg font-semibold text-slate-700 mb-2">
+                                            {wardRequestFilter === 'pending' ? 'All Clear!' : 
+                                             wardRequestFilter === 'completed' ? 'No Completed Requests' : 
+                                             'No Requests Yet'}
+                                        </p>
+                                        <p className="text-sm text-slate-500">
+                                            {wardRequestFilter === 'pending' ? 'No pending ward requests at the moment' :
+                                             wardRequestFilter === 'completed' ? 'No ward requests have been completed yet' :
+                                             'No ward requests in the system'}
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="grid gap-5">
+                                        {filteredRequests.map((request, index) => (
                                         <div key={index} className={`card-medical p-6 border-l-4 ${request.storeApproved ? 'border-emerald-500 bg-emerald-50/50' : 'border-amber-500 bg-amber-50/50'}`}>
                                             <div className="flex justify-between items-start mb-4">
                                                 <div className="flex-1">
@@ -421,7 +478,8 @@ const StoreManagerDashboard = ({ escrow, medicalAsset, provider, account, onClos
                                         </div>
                                     ))}
                                 </div>
-                            )}
+                                );
+                            })()}
                         </section>
                     </>
                 ) : (
