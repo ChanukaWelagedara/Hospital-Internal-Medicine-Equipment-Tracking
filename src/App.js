@@ -7,7 +7,6 @@ import Home from './components/Home';
 import HospitalProcurementDashboard from './components/HospitalProcurementDashboard';
 import Navigation from './components/Navigation';
 import RequestFromHospital from './components/RequestFromHospital';
-import Search from './components/Search';
 import StoreManagerDashboard from './components/StoreManagerDashboard';
 
 // ABIs
@@ -178,7 +177,6 @@ function App() {
         escrow={escrow}
         provider={provider}
       />
-      <Search />
 
       <div className='cards__section'>
 

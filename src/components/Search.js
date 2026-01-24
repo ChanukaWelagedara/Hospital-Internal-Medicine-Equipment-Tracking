@@ -1,7 +1,6 @@
 const Search = () => {
     return (
         <header>
-            <h2 className="header__title">Request. Verify. Issue.</h2>
             <input
                 type="text"
                 className="header__search"
