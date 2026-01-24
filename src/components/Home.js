@@ -289,212 +289,95 @@ const Home = ({ home, provider, account, escrow, medicalAsset, togglePop, userRo
     }
 
     return (
-        <div className="home">
-            <div className='home__details'>
-                <div className="home__overview" style={{ width: '100%' }}>
-                    <button onClick={togglePop} className="home__close">
-                        ×
-                    </button>
+        <div className="home fixed inset-0 z-40 flex items-center justify-center p-6 bg-black/60 overflow-auto">
+            <div className="home__details bg-white dark:bg-slate-800 rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-auto relative">
+                <div className="home__overview w-full">
+                    <button onClick={togglePop} className="absolute top-4 right-4 text-slate-500 hover:text-slate-700 dark:text-slate-300">×</button>
 
-                    <h1>{home.name}</h1>
-                    <p>{home.description}</p>
+                    <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{home.name}</h1>
+                    <p className="text-sm text-slate-500 dark:text-slate-300">{home.description}</p>
 
-                    <hr />
+                    <hr className="my-4 border-slate-200 dark:border-slate-700" />
 
-                    <h2>Asset Details</h2>
+                    <h2 className="text-lg font-medium">Asset Details</h2>
                     
-                    <div style={{ marginBottom: '20px' }}>
+                    <div className="mb-4">
                         {assetInfo && (
-                            <>
+                            <div className="space-y-1 text-sm text-slate-700 dark:text-slate-200">
                                 <p><strong>Status:</strong> {getStatusBadge(assetInfo.status)}</p>
                                 <p><strong>Available Quantity:</strong> {assetInfo.remainingQuantity.toString()} / {assetInfo.totalQuantity.toString()} units</p>
                                 {assetInfo.wardName && <p><strong>Current Ward:</strong> {assetInfo.wardName}</p>}
                                 {assetInfo.patientId && <p><strong>Patient ID:</strong> {assetInfo.patientId}</p>}
-                            </>
+                            </div>
                         )}
                     </div>
 
                     {home.attributes && (
-                        <ul>
+                        <ul className="list-disc list-inside mb-4 text-sm text-slate-600 dark:text-slate-300">
                             {home.attributes.map((attribute, index) => (
-                                <li key={index}>
-                                    <strong>{attribute.trait_type}</strong> : {attribute.value}
-                                </li>
+                                <li key={index}><strong>{attribute.trait_type}</strong> : {attribute.value}</li>
                             ))}
                         </ul>
                     )}
 
-                    <hr />
-
-                    {/* WARD AUTHORITY VIEW: Request Form */}
                     {userRole === 'ward' && (
-                        <div style={{ marginTop: '20px', padding: '15px', background: '#f3f4f6', borderRadius: '8px' }}>
-                            <h3 style={{ color: '#10b981' }}>Request This Asset</h3>
+                        <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-700 rounded-md">
+                            <h3 className="text-md font-semibold text-emerald-600">Request This Asset</h3>
                             
-                            <div style={{ marginBottom: '10px' }}>
-                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>Ward Name *</label>
-                                <input 
-                                    type="text" 
-                                    value={wardName}
-                                    onChange={(e) => setWardName(e.target.value)}
-                                    placeholder="e.g., ICU Ward"
-                                    style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #d1d5db' }}
-                                />
+                            <div className="mt-3">
+                                <label className="block mb-1 font-medium">Ward Name *</label>
+                                <input type="text" value={wardName} onChange={(e) => setWardName(e.target.value)} placeholder="e.g., ICU Ward" className="w-full px-3 py-2 border rounded-md bg-white dark:bg-slate-800" />
                             </div>
 
-                            <div style={{ marginBottom: '10px' }}>
-                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>Patient ID (optional)</label>
-                                <input 
-                                    type="text" 
-                                    value={patientId}
-                                    onChange={(e) => setPatientId(e.target.value)}
-                                    placeholder="e.g., P-2026-1234"
-                                    style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #d1d5db' }}
-                                />
+                            <div className="mt-3">
+                                <label className="block mb-1 font-medium">Patient ID (optional)</label>
+                                <input type="text" value={patientId} onChange={(e) => setPatientId(e.target.value)} placeholder="e.g., P-2026-1234" className="w-full px-3 py-2 border rounded-md bg-white dark:bg-slate-800" />
                             </div>
 
-                            <div style={{ marginBottom: '10px' }}>
-                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>Quantity *</label>
-                                <input 
-                                    type="number" 
-                                    value={requestedQuantity}
-                                    onChange={(e) => setRequestedQuantity(e.target.value)}
-                                    placeholder="Number of units"
-                                    style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #d1d5db' }}
-                                />
+                            <div className="mt-3">
+                                <label className="block mb-1 font-medium">Quantity *</label>
+                                <input type="number" value={requestedQuantity} onChange={(e) => setRequestedQuantity(e.target.value)} placeholder="Number of units" className="w-full px-3 py-2 border rounded-md bg-white dark:bg-slate-800" />
                             </div>
 
-                            <div style={{ marginBottom: '10px' }}>
-                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>Remarks</label>
-                                <textarea 
-                                    value={remarks}
-                                    onChange={(e) => setRemarks(e.target.value)}
-                                    placeholder="Additional notes..."
-                                    rows="3"
-                                    style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #d1d5db' }}
-                                />
+                            <div className="mt-3">
+                                <label className="block mb-1 font-medium">Remarks</label>
+                                <textarea value={remarks} onChange={(e) => setRemarks(e.target.value)} placeholder="Additional notes..." rows="3" className="w-full px-3 py-2 border rounded-md bg-white dark:bg-slate-800" />
                             </div>
 
-                            <button 
-                                onClick={handleRequestAsset}
-                                disabled={loading}
-                                style={{
-                                    width: '100%',
-                                    padding: '12px',
-                                    background: '#10b981',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '5px',
-                                    cursor: loading ? 'not-allowed' : 'pointer',
-                                    fontWeight: '600',
-                                    opacity: loading ? 0.6 : 1
-                                }}
-                            >
-                                {loading ? 'Processing...' : 'Submit Request'}
-                            </button>
+                            <button onClick={handleRequestAsset} disabled={loading} className="mt-4 w-full px-4 py-2 rounded-md bg-emerald-500 text-white font-semibold">{loading ? 'Processing...' : 'Submit Request'}</button>
                         </div>
                     )}
 
-                    {/* PENDING REQUESTS VIEW (All Roles) */}
                     {pendingRequests.length > 0 && (
-                        <div style={{ marginTop: '20px' }}>
-                            <h3>Pending Requests for This Asset</h3>
-                            
+                        <div className="mt-4">
+                            <h3 className="text-lg font-medium mb-3">Pending Requests for This Asset</h3>
                             {pendingRequests.map((request, index) => (
-                                <div key={index} style={{ 
-                                    padding: '15px', 
-                                    background: '#fef3c7', 
-                                    borderRadius: '8px', 
-                                    marginBottom: '10px',
-                                    border: '1px solid #fbbf24'
-                                }}>
-                                    <p><strong>Request #{request.id}</strong></p>
+                                <div key={index} className="mb-3 p-3 rounded-md bg-amber-50 border border-amber-200">
+                                    <p className="font-semibold">Request #{request.id}</p>
                                     <p><strong>Ward:</strong> {request.wardName}</p>
                                     {request.patientId && <p><strong>Patient:</strong> {request.patientId}</p>}
                                     <p><strong>Quantity:</strong> {request.requestedQuantity.toString()} units</p>
                                     {request.remarks && <p><strong>Remarks:</strong> {request.remarks}</p>}
-                                    
-                                    <div style={{ marginTop: '10px' }}>
-                                        <p style={{ fontSize: '14px' }}>
-                                            <strong>Store Approved:</strong> {request.storeApproved ? '✅' : '❌'} &nbsp;
-                                            <strong>Admin Approved:</strong> {request.adminApproved ? '✅' : '❌'}
-                                        </p>
+
+                                    <div className="mt-2 text-sm">
+                                        <p><strong>Store Approved:</strong> {request.storeApproved ? '✅' : '❌'} &nbsp; <strong>Admin Approved:</strong> {request.adminApproved ? '✅' : '❌'}</p>
                                     </div>
 
-                                    <div style={{ marginTop: '10px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                                        {/* Store Manager Actions */}
+                                    <div className="mt-3 flex gap-2 flex-wrap">
                                         {userRole === 'store' && !request.storeApproved && (
-                                            <button 
-                                                onClick={() => handleStoreApprove(request.id)}
-                                                disabled={loading}
-                                                style={{
-                                                    padding: '8px 16px',
-                                                    background: '#3b82f6',
-                                                    color: 'white',
-                                                    border: 'none',
-                                                    borderRadius: '5px',
-                                                    cursor: loading ? 'not-allowed' : 'pointer',
-                                                    fontWeight: '600'
-                                                }}
-                                            >
-                                                Approve (Store)
-                                            </button>
+                                            <button onClick={() => handleStoreApprove(request.id)} disabled={loading} className="px-3 py-1 rounded-md bg-blue-600 text-white font-semibold">Approve (Store)</button>
                                         )}
 
-                                        {/* Hospital Admin Actions */}
                                         {userRole === 'admin' && request.storeApproved && !request.adminApproved && (
-                                            <button 
-                                                onClick={() => handleAdminApprove(request.id)}
-                                                disabled={loading}
-                                                style={{
-                                                    padding: '8px 16px',
-                                                    background: '#8b5cf6',
-                                                    color: 'white',
-                                                    border: 'none',
-                                                    borderRadius: '5px',
-                                                    cursor: loading ? 'not-allowed' : 'pointer',
-                                                    fontWeight: '600'
-                                                }}
-                                            >
-                                                Approve (Admin)
-                                            </button>
+                                            <button onClick={() => handleAdminApprove(request.id)} disabled={loading} className="px-3 py-1 rounded-md bg-indigo-600 text-white font-semibold">Approve (Admin)</button>
                                         )}
 
                                         {userRole === 'admin' && request.storeApproved && request.adminApproved && (
-                                            <button 
-                                                onClick={() => handleIssueAsset(request.id)}
-                                                disabled={loading}
-                                                style={{
-                                                    padding: '8px 16px',
-                                                    background: '#10b981',
-                                                    color: 'white',
-                                                    border: 'none',
-                                                    borderRadius: '5px',
-                                                    cursor: loading ? 'not-allowed' : 'pointer',
-                                                    fontWeight: '600'
-                                                }}
-                                            >
-                                                Issue Asset
-                                            </button>
+                                            <button onClick={() => handleIssueAsset(request.id)} disabled={loading} className="px-3 py-1 rounded-md bg-emerald-500 text-white font-semibold">Issue Asset</button>
                                         )}
 
-                                        {/* Cancel button (available to authorized users) */}
                                         {(userRole === 'admin' || userRole === 'store') && (
-                                            <button 
-                                                onClick={() => handleCancelRequest(request.id)}
-                                                disabled={loading}
-                                                style={{
-                                                    padding: '8px 16px',
-                                                    background: '#ef4444',
-                                                    color: 'white',
-                                                    border: 'none',
-                                                    borderRadius: '5px',
-                                                    cursor: loading ? 'not-allowed' : 'pointer',
-                                                    fontWeight: '600'
-                                                }}
-                                            >
-                                                Cancel
-                                            </button>
+                                            <button onClick={() => handleCancelRequest(request.id)} disabled={loading} className="px-3 py-1 rounded-md bg-rose-600 text-white font-semibold">Cancel</button>
                                         )}
                                     </div>
                                 </div>
@@ -502,88 +385,54 @@ const Home = ({ home, provider, account, escrow, medicalAsset, togglePop, userRo
                         </div>
                     )}
 
-                    {/* STORE MANAGER PROCUREMENT REQUESTS (Hospital Admin View) */}
                     {userRole === 'admin' && storeProcurementRequests.length > 0 && (
-                        <div style={{ marginTop: '20px' }}>
-                            <h3 style={{ color: '#8b5cf6' }}>Store Manager Procurement Requests</h3>
-                            
-                            {storeProcurementRequests.map((request, index) => {
-                                const getUrgencyColor = (urgency) => {
-                                    switch (urgency) {
-                                        case 'critical': return '#dc2626';
-                                        case 'high': return '#ea580c';
-                                        case 'normal': return '#2563eb';
-                                        case 'low': return '#16a34a';
-                                        default: return '#6b7280';
+                        <div className="mt-4">
+                            <h3 className="text-lg font-medium text-indigo-600 mb-3">Store Manager Procurement Requests</h3>
+                            <div className="space-y-3">
+                                {storeProcurementRequests.map((request, index) => {
+                                    const getUrgencyColor = (urgency) => {
+                                        switch (urgency) {
+                                            case 'critical': return '#dc2626';
+                                            case 'high': return '#ea580c';
+                                            case 'normal': return '#2563eb';
+                                            case 'low': return '#16a34a';
+                                            default: return '#6b7280';
+                                        }
                                     }
-                                }
 
-                                return (
-                                    <div key={index} style={{ 
-                                        padding: '15px', 
-                                        background: request.isApproved ? '#d1fae5' : '#f3e8ff', 
-                                        borderRadius: '8px', 
-                                        marginBottom: '10px',
-                                        border: `2px solid ${request.isApproved ? '#10b981' : '#8b5cf6'}`
-                                    }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                                            <p style={{ margin: 0 }}><strong>Request #{request.id}</strong></p>
-                                            <span style={{
-                                                background: getUrgencyColor(request.urgency),
-                                                color: 'white',
-                                                padding: '4px 12px',
-                                                borderRadius: '12px',
-                                                fontSize: '12px',
-                                                fontWeight: '600',
-                                                textTransform: 'uppercase'
-                                            }}>
-                                                {request.urgency}
-                                            </span>
-                                        </div>
-                                        
-                                        <p><strong>Store Manager:</strong> {request.storeManager.substring(0, 8)}...{request.storeManager.substring(38)}</p>
-                                        <p><strong>Item:</strong> {request.itemName}</p>
-                                        <p><strong>Type:</strong> {request.itemType}</p>
-                                        <p><strong>Quantity:</strong> {request.quantity} units</p>
-                                        <p><strong>Reason:</strong> {request.reason}</p>
-                                        {request.additionalNotes && <p><strong>Notes:</strong> {request.additionalNotes}</p>}
-                                        <p><strong>Requested:</strong> {request.requestTimestamp}</p>
-                                        
-                                        <div style={{ marginTop: '10px' }}>
-                                            <p style={{ fontSize: '14px', margin: '5px 0' }}>
-                                                <strong>Status:</strong> {request.isApproved ? '✅ Approved' : '⏳ Pending'}
-                                            </p>
-                                        </div>
+                                    return (
+                                        <div key={index} className={`p-3 rounded-md ${request.isApproved ? 'bg-emerald-50 border border-emerald-200' : 'bg-violet-50 border border-violet-200'}`}>
+                                            <div className="flex justify-between items-center mb-2">
+                                                <p className="font-semibold">Request #{request.id}</p>
+                                                <span className="px-2 py-1 rounded-md text-sm uppercase" style={{background: getUrgencyColor(request.urgency), color: 'white'}}>{request.urgency}</span>
+                                            </div>
 
-                                        <div style={{ marginTop: '15px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                                            {request.isApproved && (
-                                                <button 
-                                                    onClick={() => handleIssueProcurement(request.id)}
-                                                    disabled={loading}
-                                                    style={{
-                                                        padding: '10px 20px',
-                                                        background: '#10b981',
-                                                        color: 'white',
-                                                        border: 'none',
-                                                        borderRadius: '5px',
-                                                        cursor: loading ? 'not-allowed' : 'pointer',
-                                                        fontWeight: '600',
-                                                        fontSize: '14px'
-                                                    }}
-                                                >
-                                                    📦 Issue Procurement
-                                                </button>
-                                            )}
+                                            <p><strong>Store Manager:</strong> {request.storeManager.substring(0, 8)}...{request.storeManager.substring(38)}</p>
+                                            <p><strong>Item:</strong> {request.itemName}</p>
+                                            <p><strong>Type:</strong> {request.itemType}</p>
+                                            <p><strong>Quantity:</strong> {request.quantity} units</p>
+                                            <p><strong>Reason:</strong> {request.reason}</p>
+                                            {request.additionalNotes && <p><strong>Notes:</strong> {request.additionalNotes}</p>}
+                                            <p><strong>Requested:</strong> {request.requestTimestamp}</p>
+
+                                            <div className="mt-2">
+                                                <p className="text-sm"><strong>Status:</strong> {request.isApproved ? '✅ Approved' : '⏳ Pending'}</p>
+                                            </div>
+
+                                            <div className="mt-3">
+                                                {request.isApproved && (
+                                                    <button onClick={() => handleIssueProcurement(request.id)} disabled={loading} className="px-3 py-1 rounded-md bg-emerald-500 text-white font-semibold">📦 Issue Procurement</button>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                )
-                            })}
+                                    )
+                                })}
+                            </div>
                         </div>
                     )}
 
-                    {/* Info message for different roles */}
-                    <div style={{ marginTop: '20px', padding: '10px', background: '#e0f2fe', borderRadius: '5px' }}>
-                        <p style={{ fontSize: '14px', color: '#0369a1' }}>
+                    <div className="mt-4 p-3 bg-sky-50 rounded-md">
+                        <p className="text-sm text-sky-700">
                             {userRole === 'admin' && '👨‍⚕️ You are Hospital Admin - You can approve and issue assets'}
                             {userRole === 'store' && '📦 You are Store Manager - You can approve ward requests'}
                             {userRole === 'ward' && '🏥 You are Ward Authority - You can request assets for your ward'}

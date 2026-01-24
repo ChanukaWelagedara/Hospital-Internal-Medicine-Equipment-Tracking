@@ -55,62 +55,50 @@ const Navigation = ({ account, setAccount, userRole, medicalAsset, escrow, provi
     }
 
     return (
-        <nav>
-            <div className='nav__brand'>
-                <span style={{ fontSize: '32px', marginRight: '10px' }}>🏥</span>
-                <h1>Hospital Asset Tracker</h1>
-            </div>
+        <nav className="w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+            <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                    <span className="text-2xl">🏥</span>
+                    <h1 className="text-lg font-bold text-slate-900 dark:text-slate-100">Hospital Asset Tracker</h1>
+                </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                {userRole && (
-                    <span style={{ 
-                        padding: '8px 12px', 
-                        background: '#10b981', 
-                        color: 'white',
-                        borderRadius: '5px',
-                        fontSize: '14px',
-                        fontWeight: '600'
-                    }}>
-                        {getRoleName()}
-                    </span>
-                )}
-                {account && medicalAsset && escrow && (
-                    <button
-                        type="button"
-                        onClick={handleApproveEscrow}
-                        disabled={approving}
-                        style={{
-                            padding: '8px 16px',
-                            background: approving ? '#9ca3af' : '#3b82f6',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '5px',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                            cursor: approving ? 'not-allowed' : 'pointer'
-                        }}
-                        title="Approve escrow contract to manage your assets"
-                    >
-                        {approving ? '⏳ Approving...' : '🔓 Enable Asset Management'}
-                    </button>
-                )}
-                {account ? (
-                    <button
-                        type="button"
-                        className='nav__connect'
-                        title={account}
-                    >
-                        {account.slice(0, 6) + '...' + account.slice(38, 42)}
-                    </button>
-                ) : (
-                    <button
-                        type="button"
-                        className='nav__connect'
-                        onClick={connectHandler}
-                    >
-                        Connect
-                    </button>
-                )}
+                <div className="flex items-center gap-3">
+                    {userRole && (
+                        <span className="px-3 py-1 rounded-md bg-emerald-500 text-white text-sm font-semibold">
+                            {getRoleName()}
+                        </span>
+                    )}
+
+                    {account && medicalAsset && escrow && (
+                        <button
+                            type="button"
+                            onClick={handleApproveEscrow}
+                            disabled={approving}
+                            title="Approve escrow contract to manage your assets"
+                            className={`px-3 py-2 rounded-md text-sm font-semibold text-white ${approving ? 'bg-slate-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+                        >
+                            {approving ? '⏳ Approving...' : '🔓 Enable Asset Management'}
+                        </button>
+                    )}
+
+                    {account ? (
+                        <button
+                            type="button"
+                            title={account}
+                            className="px-4 py-2 rounded-md bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-100 font-medium"
+                        >
+                            {account.slice(0, 6) + '...' + account.slice(38, 42)}
+                        </button>
+                    ) : (
+                        <button
+                            type="button"
+                            onClick={connectHandler}
+                            className="px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white font-medium"
+                        >
+                            Connect
+                        </button>
+                    )}
+                </div>
             </div>
         </nav>
     );

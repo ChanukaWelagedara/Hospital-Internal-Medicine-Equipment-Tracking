@@ -205,146 +205,43 @@ const StoreManagerDashboard = ({ escrow, medicalAsset, provider, account, onClos
     };
 
     return (
-        <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'rgba(0, 0, 0, 0.8)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 1000,
-            overflowY: 'auto',
-            padding: '20px'
-        }}>
-            <div style={{
-                background: 'white',
-                borderRadius: '10px',
-                padding: '30px',
-                maxWidth: '1000px',
-                width: '100%',
-                maxHeight: '90vh',
-                overflowY: 'auto',
-                position: 'relative'
-            }}>
-                <button 
-                    onClick={onClose}
-                    style={{
-                        position: 'absolute',
-                        top: '15px',
-                        right: '15px',
-                        background: 'none',
-                        border: 'none',
-                        fontSize: '30px',
-                        cursor: 'pointer',
-                        color: '#666'
-                    }}
-                >
-                    ×
-                </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60 overflow-auto">
+            <div className="bg-white dark:bg-slate-800 rounded-xl p-6 max-w-6xl w-full max-h-[90vh] overflow-auto relative shadow-xl">
+                <button onClick={onClose} className="absolute top-4 right-4 text-slate-500 hover:text-slate-700 dark:text-slate-300">×</button>
 
-                <h2 style={{ marginBottom: '10px', color: '#333' }}>
-                    Store Manager Dashboard
-                </h2>
-                <p style={{ color: '#6b7280', fontSize: '14px', marginBottom: '25px' }}>
-                    Issue medicines/equipment to wards and track your procurement requests
-                </p>
+                <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-1">Store Manager Dashboard</h2>
+                <p className="text-sm text-slate-500 dark:text-slate-300 mb-6">Issue medicines/equipment to wards and track your procurement requests</p>
 
-                {loading && <p>Loading...</p>}
+                {loading && <p className="text-sm text-slate-500">Loading...</p>}
 
                 {!showIssueForm ? (
                     <>
-                        {/* My Procurement Requests Section */}
-                        <div style={{ marginBottom: '30px' }}>
-                            <h3 style={{ 
-                                fontSize: '18px', 
-                                color: '#333', 
-                                marginBottom: '15px',
-                                paddingBottom: '10px',
-                                borderBottom: '2px solid #e5e7eb'
-                            }}>
-                                📦 My Procurement Requests
-                            </h3>
-                            
+                        <section className="mb-8">
+                            <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-3 border-b border-slate-100 dark:border-slate-700 pb-3">📦 My Procurement Requests</h3>
+
                             {procurementRequests.length === 0 ? (
-                                <div style={{ 
-                                    padding: '20px', 
-                                    textAlign: 'center', 
-                                    background: '#f9fafb', 
-                                    borderRadius: '8px',
-                                    color: '#6b7280'
-                                }}>
-                                    <p style={{ fontSize: '14px' }}>No procurement requests yet</p>
-                                </div>
+                                <div className="p-4 text-center bg-slate-50 dark:bg-slate-700 rounded-md text-sm text-slate-500">No procurement requests yet</div>
                             ) : (
-                                <div style={{ display: 'grid', gap: '12px' }}>
+                                <div className="grid gap-3">
                                     {procurementRequests.map((request, index) => (
-                                        <div key={index} style={{
-                                            border: '1px solid #e5e7eb',
-                                            borderRadius: '8px',
-                                            padding: '15px',
-                                            background: 'white',
-                                            boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
-                                        }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '10px' }}>
-                                                <div style={{ flex: 1 }}>
-                                                    <h4 style={{ margin: '0 0 8px 0', color: '#111827', fontSize: '16px' }}>
-                                                        {request.itemName}
-                                                    </h4>
-                                                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '10px' }}>
-                                                        <span style={{ 
-                                                            padding: '3px 8px', 
-                                                            background: '#dbeafe', 
-                                                            color: '#1e40af',
-                                                            borderRadius: '10px',
-                                                            fontSize: '11px',
-                                                            fontWeight: '500'
-                                                        }}>
-                                                            {request.itemType.toUpperCase()}
-                                                        </span>
-                                                        <span style={{ 
-                                                            padding: '3px 8px', 
-                                                            background: request.statusColor,
-                                                            color: 'white',
-                                                            borderRadius: '10px',
-                                                            fontSize: '11px',
-                                                            fontWeight: '600'
-                                                        }}>
-                                                            {request.status}
-                                                        </span>
-                                                        <span style={{ 
-                                                            padding: '3px 8px', 
-                                                            background: '#fef3c7', 
-                                                            color: '#92400e',
-                                                            borderRadius: '10px',
-                                                            fontSize: '11px'
-                                                        }}>
-                                                            {request.urgency}
-                                                        </span>
+                                        <div key={index} className="border rounded-md p-4 bg-white dark:bg-slate-700 shadow-sm">
+                                            <div className="flex justify-between items-start mb-2">
+                                                <div className="flex-1">
+                                                    <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">{request.itemName}</h4>
+                                                    <div className="flex gap-2 flex-wrap mb-2">
+                                                        <span className="text-xs px-2 py-1 rounded-full bg-sky-100 text-sky-700">{request.itemType.toUpperCase()}</span>
+                                                        <span className="text-xs px-2 py-1 rounded-full" style={{background: request.statusColor, color: 'white'}}>{request.status}</span>
+                                                        <span className="text-xs px-2 py-1 rounded-full bg-amber-50 text-amber-700">{request.urgency}</span>
                                                     </div>
-                                                    <div style={{ fontSize: '13px', color: '#6b7280', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '5px' }}>
-                                                        <p style={{ margin: 0 }}><strong>Quantity:</strong> {request.quantity} units</p>
-                                                        <p style={{ margin: 0 }}><strong>Requested:</strong> {request.requestTimestamp}</p>
-                                                        {request.approvedTimestamp && (
-                                                            <p style={{ margin: 0, gridColumn: '1 / -1' }}>
-                                                                <strong>Processed:</strong> {request.approvedTimestamp}
-                                                            </p>
-                                                        )}
+                                                    <div className="grid grid-cols-2 gap-2 text-xs text-slate-500">
+                                                        <div><strong>Quantity:</strong> {request.quantity} units</div>
+                                                        <div><strong>Requested:</strong> {request.requestTimestamp}</div>
+                                                        {request.approvedTimestamp && <div className="col-span-2"><strong>Processed:</strong> {request.approvedTimestamp}</div>}
                                                     </div>
                                                     {request.hospitalResponse && (
-                                                        <div style={{ 
-                                                            marginTop: '10px',
-                                                            padding: '10px',
-                                                            background: request.isApproved ? '#f0fdf4' : '#fef2f2',
-                                                            borderRadius: '6px',
-                                                            borderLeft: `3px solid ${request.statusColor}`
-                                                        }}>
-                                                            <strong style={{ fontSize: '12px', color: '#333' }}>Hospital Response:</strong>
-                                                            <p style={{ margin: '5px 0 0 0', fontSize: '13px', color: '#111' }}>
-                                                                {request.hospitalResponse}
-                                                            </p>
+                                                        <div className={`mt-3 p-3 rounded-md ${request.isApproved ? 'bg-emerald-50 border-emerald-200' : 'bg-rose-50 border-rose-200'}`} style={{borderLeft: `4px solid ${request.statusColor}`}}>
+                                                            <strong className="text-sm text-slate-800">Hospital Response:</strong>
+                                                            <p className="mt-1 text-sm text-slate-700">{request.hospitalResponse}</p>
                                                         </div>
                                                     )}
                                                 </div>
@@ -353,233 +250,88 @@ const StoreManagerDashboard = ({ escrow, medicalAsset, provider, account, onClos
                                     ))}
                                 </div>
                             )}
-                        </div>
+                        </section>
 
-
-                        {/* Ward Requests Section */}
-                        <div>
-                            <h3 style={{ 
-                                fontSize: '18px', 
-                                color: '#333', 
-                                marginBottom: '15px',
-                                paddingBottom: '10px',
-                                borderBottom: '2px solid #e5e7eb'
-                            }}>
-                                🏥 Ward Requests to Process
-                            </h3>
+                        <section>
+                            <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-3 border-b border-slate-100 dark:border-slate-700 pb-3">🏥 Ward Requests to Process</h3>
 
                             {wardRequests.length === 0 ? (
-                                <div style={{ 
-                                    padding: '40px', 
-                                    textAlign: 'center', 
-                                    background: '#f9fafb', 
-                                    borderRadius: '8px',
-                                    color: '#6b7280'
-                                }}>
-                                    <p style={{ fontSize: '18px', marginBottom: '10px' }}>✓ No pending requests</p>
-                                    <p style={{ fontSize: '14px' }}>All ward requests have been processed</p>
+                                <div className="p-8 text-center bg-slate-50 dark:bg-slate-700 rounded-md text-slate-500">
+                                    <p className="text-lg">✓ No pending requests</p>
+                                    <p className="text-sm">All ward requests have been processed</p>
                                 </div>
                             ) : (
-                                <div style={{ display: 'grid', gap: '15px' }}>
+                                <div className="grid gap-4">
                                     {wardRequests.map((request, index) => (
-                                        <div key={index} style={{
-                                            border: '1px solid #e5e7eb',
-                                            borderRadius: '8px',
-                                            padding: '20px',
-                                            background: request.storeApproved ? '#f0fdf4' : '#fffbeb'
-                                        }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '15px' }}>
+                                        <div key={index} className={`border rounded-md p-4 ${request.storeApproved ? 'bg-emerald-50' : 'bg-amber-50'}`}>
+                                            <div className="flex justify-between items-start mb-3">
                                                 <div>
-                                                    <h3 style={{ margin: '0 0 10px 0', color: '#111827' }}>{request.assetName}</h3>
-                                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', fontSize: '14px' }}>
-                                                        <p><strong>Type:</strong> {request.itemType}</p>
-                                                        <p><strong>Requested By:</strong> {request.wardName}</p>
-                                                        <p><strong>Patient ID:</strong> {request.patientId || 'N/A'}</p>
-                                                        <p><strong>Quantity:</strong> {request.quantity} units</p>
-                                                        <p><strong>Available:</strong> {request.availableQuantity} units</p>
-                                                        <p><strong>Requested:</strong> {request.timestamp}</p>
+                                                    <h3 className="text-md font-semibold text-slate-900">{request.assetName}</h3>
+                                                    <div className="grid grid-cols-2 gap-2 text-sm text-slate-600 mt-2">
+                                                        <div><strong>Type:</strong> {request.itemType}</div>
+                                                        <div><strong>Requested By:</strong> {request.wardName}</div>
+                                                        <div><strong>Patient ID:</strong> {request.patientId || 'N/A'}</div>
+                                                        <div><strong>Quantity:</strong> {request.quantity} units</div>
+                                                        <div><strong>Available:</strong> {request.availableQuantity} units</div>
+                                                        <div><strong>Requested:</strong> {request.timestamp}</div>
                                                     </div>
-                                                    {request.remarks && (
-                                                        <p style={{ marginTop: '10px', fontSize: '13px', color: '#6b7280' }}>
-                                                            <strong>Remarks:</strong> {request.remarks}
-                                                        </p>
-                                                    )}
+                                                    {request.remarks && <p className="mt-2 text-sm text-slate-500"><strong>Remarks:</strong> {request.remarks}</p>}
                                                 </div>
-                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', alignItems: 'flex-end' }}>
+
+                                                <div className="flex flex-col gap-2 items-end">
                                                     {request.storeApproved ? (
-                                                        <span style={{ 
-                                                            padding: '5px 12px', 
-                                                            background: '#10b981', 
-                                                            color: 'white', 
-                                                            borderRadius: '5px',
-                                                            fontSize: '12px',
-                                                            fontWeight: '600'
-                                                        }}>
-                                                            ✓ You Approved
-                                                        </span>
+                                                        <span className="px-3 py-1 rounded-md bg-emerald-500 text-white text-sm font-semibold">✓ You Approved</span>
                                                     ) : (
-                                                        <span style={{ 
-                                                            padding: '5px 12px', 
-                                                            background: '#f59e0b', 
-                                                            color: 'white', 
-                                                            borderRadius: '5px',
-                                                            fontSize: '12px',
-                                                            fontWeight: '600'
-                                                        }}>
-                                                            Pending Your Approval
-                                                        </span>
+                                                        <span className="px-3 py-1 rounded-md bg-amber-500 text-white text-sm font-semibold">Pending Your Approval</span>
                                                     )}
                                                 </div>
                                             </div>
 
-                                            {/* Action buttons */}
-                                            <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
+                                            <div className="flex gap-3 mt-2">
                                                 {!request.issued && (
-                                                    <button
-                                                        onClick={() => handleIssueClick(request)}
-                                                        disabled={request.availableQuantity < request.quantity}
-                                                        style={{
-                                                            padding: '10px 20px',
-                                                            background: request.availableQuantity >= request.quantity ? '#3b82f6' : '#9ca3af',
-                                                            color: 'white',
-                                                            border: 'none',
-                                                            borderRadius: '5px',
-                                                            cursor: request.availableQuantity >= request.quantity ? 'pointer' : 'not-allowed',
-                                                            fontWeight: '600',
-                                                            fontSize: '14px'
-                                                        }}
-                                                    >
+                                                    <button onClick={() => handleIssueClick(request)} disabled={request.availableQuantity < request.quantity} className={`px-4 py-2 rounded-md text-white font-semibold ${request.availableQuantity >= request.quantity ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-400 cursor-not-allowed'}`}>
                                                         📦 Issue to Ward
                                                     </button>
                                                 )}
                                                 {request.availableQuantity < request.quantity && (
-                                                    <span style={{ 
-                                                        fontSize: '13px', 
-                                                        color: '#dc2626',
-                                                        alignSelf: 'center'
-                                                    }}>
-                                                        ⚠️ Insufficient stock - Request from Hospital Authority
-                                                    </span>
+                                                    <span className="text-sm text-rose-600 self-center">⚠️ Insufficient stock - Request from Hospital Authority</span>
                                                 )}
                                             </div>
                                         </div>
                                     ))}
                                 </div>
                             )}
-                        </div>
+                        </section>
                     </>
                 ) : (
-                    /* Issue Form */
                     <form onSubmit={handleIssueSubmit}>
-                        <h3 style={{ marginBottom: '20px' }}>Issue Item to Ward</h3>
-                        
-                        <div style={{ display: 'grid', gap: '15px', marginBottom: '20px' }}>
+                        <h3 className="text-lg font-medium mb-4">Issue Item to Ward</h3>
+
+                        <div className="grid gap-3 mb-4">
                             <div>
-                                <label style={{ display: 'block', fontWeight: '600', marginBottom: '5px' }}>
-                                    Item
-                                </label>
-                                <input
-                                    type="text"
-                                    value={issueFormData.assetName}
-                                    disabled
-                                    style={{
-                                        width: '100%',
-                                        padding: '10px',
-                                        border: '1px solid #ddd',
-                                        borderRadius: '5px',
-                                        background: '#f9fafb'
-                                    }}
-                                />
+                                <label className="block font-medium mb-1">Item</label>
+                                <input type="text" value={issueFormData.assetName} disabled className="w-full px-3 py-2 border rounded-md bg-slate-50" />
                             </div>
 
                             <div>
-                                <label style={{ display: 'block', fontWeight: '600', marginBottom: '5px' }}>
-                                    Ward Name
-                                </label>
-                                <input
-                                    type="text"
-                                    value={issueFormData.wardName}
-                                    disabled
-                                    style={{
-                                        width: '100%',
-                                        padding: '10px',
-                                        border: '1px solid #ddd',
-                                        borderRadius: '5px',
-                                        background: '#f9fafb'
-                                    }}
-                                />
+                                <label className="block font-medium mb-1">Ward Name</label>
+                                <input type="text" value={issueFormData.wardName} disabled className="w-full px-3 py-2 border rounded-md bg-slate-50" />
                             </div>
 
                             <div>
-                                <label style={{ display: 'block', fontWeight: '600', marginBottom: '5px' }}>
-                                    Patient ID
-                                </label>
-                                <input
-                                    type="text"
-                                    value={issueFormData.patientId}
-                                    onChange={(e) => setIssueFormData({...issueFormData, patientId: e.target.value})}
-                                    required
-                                    style={{
-                                        width: '100%',
-                                        padding: '10px',
-                                        border: '1px solid #ddd',
-                                        borderRadius: '5px'
-                                    }}
-                                />
+                                <label className="block font-medium mb-1">Patient ID</label>
+                                <input type="text" value={issueFormData.patientId} onChange={(e) => setIssueFormData({...issueFormData, patientId: e.target.value})} required className="w-full px-3 py-2 border rounded-md" />
                             </div>
 
                             <div>
-                                <label style={{ display: 'block', fontWeight: '600', marginBottom: '5px' }}>
-                                    Quantity to Issue
-                                </label>
-                                <input
-                                    type="number"
-                                    value={issueFormData.quantity}
-                                    disabled
-                                    style={{
-                                        width: '100%',
-                                        padding: '10px',
-                                        border: '1px solid #ddd',
-                                        borderRadius: '5px',
-                                        background: '#f9fafb'
-                                    }}
-                                />
+                                <label className="block font-medium mb-1">Quantity to Issue</label>
+                                <input type="number" value={issueFormData.quantity} disabled className="w-full px-3 py-2 border rounded-md bg-slate-50" />
                             </div>
                         </div>
 
-                        <div style={{ display: 'flex', gap: '10px' }}>
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                style={{
-                                    padding: '12px 30px',
-                                    background: '#10b981',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '5px',
-                                    cursor: loading ? 'not-allowed' : 'pointer',
-                                    fontWeight: '600',
-                                    fontSize: '16px'
-                                }}
-                            >
-                                {loading ? 'Issuing...' : 'Confirm Issue'}
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setShowIssueForm(false)}
-                                style={{
-                                    padding: '12px 30px',
-                                    background: '#6b7280',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '5px',
-                                    cursor: 'pointer',
-                                    fontWeight: '600',
-                                    fontSize: '16px'
-                                }}
-                            >
-                                Cancel
-                            </button>
+                        <div className="flex gap-3">
+                            <button type="submit" disabled={loading} className="px-4 py-2 rounded-md bg-emerald-500 text-white font-semibold">{loading ? 'Issuing...' : 'Confirm Issue'}</button>
+                            <button type="button" onClick={() => setShowIssueForm(false)} className="px-4 py-2 rounded-md bg-slate-600 text-white font-semibold">Cancel</button>
                         </div>
                     </form>
                 )}

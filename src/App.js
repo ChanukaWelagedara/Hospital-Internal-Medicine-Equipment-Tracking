@@ -178,102 +178,40 @@ function App() {
         provider={provider}
       />
 
-      <div className='cards__section'>
+      <div className="max-w-7xl mx-auto px-4 py-6">
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-          <h3>Hospital Inventory - Medicines & Equipment</h3>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+          <h3 className="text-lg font-semibold">Hospital Inventory - Medicines & Equipment</h3>
           
-          <div style={{ display: 'flex', gap: '10px' }}>
+          <div className="flex gap-2">
             {/* Hospital Authority (Admin) can add new assets */}
             {userRole === 'admin' && (
               <>
-                <button 
-                  onClick={() => setShowAddAsset(true)}
-                  style={{
-                    padding: '10px 20px',
-                    background: '#10b981',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    fontWeight: '600'
-                  }}
-                >
-                  + Add Medicine/Equipment
-                </button>
-                <button 
-                  onClick={() => setShowHospitalProcurement(true)}
-                  style={{
-                    padding: '10px 20px',
-                    background: '#8b5cf6',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    fontWeight: '600'
-                  }}
-                >
-                  📦 View Procurement Requests
-                </button>
+                <button onClick={() => setShowAddAsset(true)} className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-md font-semibold">+ Add Medicine/Equipment</button>
+                <button onClick={() => setShowHospitalProcurement(true)} className="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-md font-semibold">📦 View Procurement Requests</button>
               </>
             )}
             
             {/* Store Manager specific actions */}
             {userRole === 'store' && (
               <>
-                <button 
-                  onClick={() => setShowStoreManagerDashboard(true)}
-                  style={{
-                    padding: '10px 20px',
-                    background: '#3b82f6',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    fontWeight: '600'
-                  }}
-                >
-                  📋 View Ward Requests
-                </button>
-                <button 
-                  onClick={() => setShowRequestFromHospital(true)}
-                  style={{
-                    padding: '10px 20px',
-                    background: '#f59e0b',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    fontWeight: '600'
-                  }}
-                >
-                  📦 Request Stock from Hospital
-                </button>
+                <button onClick={() => setShowStoreManagerDashboard(true)} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-semibold">📋 View Ward Requests</button>
+                <button onClick={() => setShowRequestFromHospital(true)} className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-md font-semibold">📦 Request Stock from Hospital</button>
               </>
             )}
           </div>
         </div>
 
-        <hr />
-
-        <div className='cards'>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {assets.map((asset, index) => (
-            <div className='card' key={index} onClick={() => togglePop(asset)}>
-              <div className='card__info'>
-                <h4>{asset.name}</h4>
-                <p>
-                  <strong>Type:</strong> {asset.itemType || asset.attributes?.find(a => a.trait_type === "Item Type")?.value || 'Medicine'}
-                </p>
-                <p>
-                  <strong>Batch/Serial:</strong> {asset.attributes?.find(a => a.trait_type === "Batch ID" || a.trait_type === "Serial Number")?.value || 'N/A'}
-                </p>
-                <p>
-                  <strong>Available:</strong> {asset.remainingQuantity} / {asset.totalQuantity} units
-                </p>
+            <div key={index} onClick={() => togglePop(asset)} className="cursor-pointer group">
+              <div className="p-4 bg-white dark:bg-slate-700 rounded-lg border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition">
+                <h4 className="text-md font-semibold text-slate-900 dark:text-slate-100">{asset.name}</h4>
+                <p className="text-sm text-slate-600 dark:text-slate-300"><strong>Type:</strong> {asset.itemType || asset.attributes?.find(a => a.trait_type === "Item Type")?.value || 'Medicine'}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-300"><strong>Batch/Serial:</strong> {asset.attributes?.find(a => a.trait_type === "Batch ID" || a.trait_type === "Serial Number")?.value || 'N/A'}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-300"><strong>Available:</strong> {asset.remainingQuantity} / {asset.totalQuantity} units</p>
                 {asset.attributes?.find(a => a.trait_type === "Expiry Date") && (
-                  <p>
-                    <strong>Expiry:</strong> {asset.attributes.find(a => a.trait_type === "Expiry Date").value}
-                  </p>
+                  <p className="text-sm text-slate-600 dark:text-slate-300"><strong>Expiry:</strong> {asset.attributes.find(a => a.trait_type === "Expiry Date").value}</p>
                 )}
               </div>
             </div>
