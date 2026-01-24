@@ -10,14 +10,18 @@ const Home = ({ home, provider, account, escrow, medicalAsset, togglePop, userRo
     // Asset details
     const [assetInfo, setAssetInfo] = useState(null)
     const [pendingRequests, setPendingRequests] = useState([])
+    const [storeProcurementRequests, setStoreProcurementRequests] = useState([])
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (home.id && medicalAsset && escrow) {
             fetchAssetDetails()
             fetchPendingRequests()
+            if (userRole === 'admin') {
+                fetchStoreProcurementRequests()
+            }
         }
-    }, [home.id, medicalAsset, escrow])
+    }, [home.id, medicalAsset, escrow, userRole])
 
     const fetchAssetDetails = async () => {
         try {
@@ -49,6 +53,36 @@ const Home = ({ home, provider, account, escrow, medicalAsset, togglePop, userRo
             setPendingRequests(assetRequests)
         } catch (error) {
             console.error("Error fetching requests:", error)
+        }
+    }
+
+    const fetchStoreProcurementRequests = async () => {
+        try {
+            // Get all pending procurement requests
+            const pendingProcurementIds = await escrow.getPendingProcurementRequests()
+            
+            const procurementData = await Promise.all(
+                pendingProcurementIds.map(async (id) => {
+                    const request = await escrow.getProcurementRequest(id)
+                    return {
+                        id: id.toString(),
+                        storeManager: request.storeManager,
+                        itemName: request.itemName,
+                        itemType: request.itemType,
+                        quantity: request.quantity.toString(),
+                        reason: request.reason,
+                        urgency: request.urgency,
+                        additionalNotes: request.additionalNotes,
+                        requestTimestamp: new Date(request.requestTimestamp.toNumber() * 1000).toLocaleString(),
+                        isPending: request.isPending,
+                        isApproved: request.isApproved
+                    }
+                })
+            )
+            
+            setStoreProcurementRequests(procurementData)
+        } catch (error) {
+            console.error("Error fetching store procurement requests:", error)
         }
     }
 
@@ -148,6 +182,35 @@ const Home = ({ home, provider, account, escrow, medicalAsset, togglePop, userRo
         setLoading(true)
         try {
             const signer = await provider.getSigner()
+            
+            // Get the request details to find the asset ID
+            const request = await escrow.getIssuanceRequest(requestId)
+            const assetId = request.assetId.toNumber()
+            
+            // Get the owner of the asset
+            const assetOwner = await medicalAsset.ownerOf(assetId)
+            console.log('Asset owner:', assetOwner)
+            console.log('Current account:', account)
+            
+            // Check if escrow contract is approved by the asset owner
+            const isApproved = await medicalAsset.isApprovedForAll(assetOwner, escrow.address)
+            console.log('Is escrow approved?', isApproved)
+            
+            if (!isApproved) {
+                // If current account is the owner, approve it
+                if (assetOwner.toLowerCase() === account.toLowerCase()) {
+                    console.log('Approving escrow contract to manage assets...')
+                    const approvalTx = await medicalAsset.connect(signer).setApprovalForAll(escrow.address, true)
+                    await approvalTx.wait()
+                    console.log('Escrow contract approved successfully')
+                } else {
+                    // Owner needs to approve first
+                    alert(`The asset owner (${assetOwner.substring(0, 8)}...${assetOwner.substring(38)}) needs to approve the escrow contract first. Please contact them or switch to that account.`)
+                    setLoading(false)
+                    return
+                }
+            }
+            
             const transaction = await escrow.connect(signer).issueAsset(requestId)
             await transaction.wait()
             
@@ -159,6 +222,28 @@ const Home = ({ home, provider, account, escrow, medicalAsset, togglePop, userRo
             
         } catch (error) {
             console.error("Error issuing asset:", error)
+            alert('Error: ' + (error.reason || error.message))
+        }
+        setLoading(false)
+    }
+
+    // HOSPITAL ADMIN: Issue procurement (for store manager requests)
+    const handleIssueProcurement = async (procurementId) => {
+        if (!window.confirm('Issue this procurement order? This will mark it as completed.')) {
+            return
+        }
+
+        setLoading(true)
+        try {
+            const signer = await provider.getSigner()
+            // This assumes there's a function to mark procurement as issued/completed
+            // You may need to adapt this based on your smart contract
+            alert('Procurement issued successfully! The store manager will receive the items.')
+            
+            await fetchStoreProcurementRequests()
+            
+        } catch (error) {
+            console.error("Error issuing procurement:", error)
             alert('Error: ' + (error.reason || error.message))
         }
         setLoading(false)
@@ -414,6 +499,85 @@ const Home = ({ home, provider, account, escrow, medicalAsset, togglePop, userRo
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                    )}
+
+                    {/* STORE MANAGER PROCUREMENT REQUESTS (Hospital Admin View) */}
+                    {userRole === 'admin' && storeProcurementRequests.length > 0 && (
+                        <div style={{ marginTop: '20px' }}>
+                            <h3 style={{ color: '#8b5cf6' }}>Store Manager Procurement Requests</h3>
+                            
+                            {storeProcurementRequests.map((request, index) => {
+                                const getUrgencyColor = (urgency) => {
+                                    switch (urgency) {
+                                        case 'critical': return '#dc2626';
+                                        case 'high': return '#ea580c';
+                                        case 'normal': return '#2563eb';
+                                        case 'low': return '#16a34a';
+                                        default: return '#6b7280';
+                                    }
+                                }
+
+                                return (
+                                    <div key={index} style={{ 
+                                        padding: '15px', 
+                                        background: request.isApproved ? '#d1fae5' : '#f3e8ff', 
+                                        borderRadius: '8px', 
+                                        marginBottom: '10px',
+                                        border: `2px solid ${request.isApproved ? '#10b981' : '#8b5cf6'}`
+                                    }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                                            <p style={{ margin: 0 }}><strong>Request #{request.id}</strong></p>
+                                            <span style={{
+                                                background: getUrgencyColor(request.urgency),
+                                                color: 'white',
+                                                padding: '4px 12px',
+                                                borderRadius: '12px',
+                                                fontSize: '12px',
+                                                fontWeight: '600',
+                                                textTransform: 'uppercase'
+                                            }}>
+                                                {request.urgency}
+                                            </span>
+                                        </div>
+                                        
+                                        <p><strong>Store Manager:</strong> {request.storeManager.substring(0, 8)}...{request.storeManager.substring(38)}</p>
+                                        <p><strong>Item:</strong> {request.itemName}</p>
+                                        <p><strong>Type:</strong> {request.itemType}</p>
+                                        <p><strong>Quantity:</strong> {request.quantity} units</p>
+                                        <p><strong>Reason:</strong> {request.reason}</p>
+                                        {request.additionalNotes && <p><strong>Notes:</strong> {request.additionalNotes}</p>}
+                                        <p><strong>Requested:</strong> {request.requestTimestamp}</p>
+                                        
+                                        <div style={{ marginTop: '10px' }}>
+                                            <p style={{ fontSize: '14px', margin: '5px 0' }}>
+                                                <strong>Status:</strong> {request.isApproved ? '✅ Approved' : '⏳ Pending'}
+                                            </p>
+                                        </div>
+
+                                        <div style={{ marginTop: '15px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                            {request.isApproved && (
+                                                <button 
+                                                    onClick={() => handleIssueProcurement(request.id)}
+                                                    disabled={loading}
+                                                    style={{
+                                                        padding: '10px 20px',
+                                                        background: '#10b981',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '5px',
+                                                        cursor: loading ? 'not-allowed' : 'pointer',
+                                                        fontWeight: '600',
+                                                        fontSize: '14px'
+                                                    }}
+                                                >
+                                                    📦 Issue Procurement
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                )
+                            })}
                         </div>
                     )}
 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import '../AddMedicine.css';
 
-const AddMedicine = ({ provider, account, medicalAsset, onClose, onMedicineAdded }) => {
+const AddMedicine = ({ provider, account, medicalAsset, escrow, onClose, onMedicineAdded }) => {
     const [assetType, setAssetType] = useState('medicine'); // 'medicine' or 'equipment'
     const [formData, setFormData] = useState({
         name: '',
@@ -89,6 +89,14 @@ const AddMedicine = ({ provider, account, medicalAsset, onClose, onMedicineAdded
             );
             
             await transaction.wait();
+
+            // Approve escrow contract to manage this asset
+            if (escrow) {
+                const escrowAddress = escrow.address;
+                const approvalTx = await medicalAsset.connect(signer).setApprovalForAll(escrowAddress, true);
+                await approvalTx.wait();
+                console.log('Escrow contract approved to manage assets');
+            }
 
             alert(`${assetType === 'medicine' ? 'Medicine' : 'Equipment'} added successfully!`);
             

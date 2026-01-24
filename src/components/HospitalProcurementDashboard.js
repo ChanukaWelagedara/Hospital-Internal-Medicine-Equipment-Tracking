@@ -13,27 +13,61 @@ const HospitalProcurementDashboard = ({ provider, account, escrow, onClose }) =>
 
     const loadProcurementRequests = async () => {
         try {
-            const pendingRequestIds = await escrow.getPendingProcurementRequests();
+            // Get total procurement counter
+            const procurementCounter = await escrow.procurementCounter();
+            const totalRequests = procurementCounter.toNumber();
             
-            const requestsData = await Promise.all(
-                pendingRequestIds.map(async (id) => {
-                    const request = await escrow.getProcurementRequest(id);
-                    return {
-                        id: id.toString(),
-                        storeManager: request.storeManager,
-                        itemName: request.itemName,
-                        itemType: request.itemType,
-                        quantity: request.quantity.toString(),
-                        reason: request.reason,
-                        urgency: request.urgency,
-                        additionalNotes: request.additionalNotes,
-                        requestTimestamp: new Date(request.requestTimestamp.toNumber() * 1000).toLocaleString(),
-                        isPending: request.isPending
-                    };
-                })
-            );
+            console.log('Total procurement requests:', totalRequests);
+            
+            const requestsData = [];
+            
+            // Load all procurement requests (from 1 to procurementCounter)
+            for (let i = 1; i <= totalRequests; i++) {
+                const request = await escrow.getProcurementRequest(i);
+                
+                // Determine status
+                let status = 'Pending';
+                let statusColor = '#f59e0b';
+                let statusIcon = '⏳';
+                
+                if (request.isApproved) {
+                    status = 'Approved';
+                    statusColor = '#16a34a';
+                    statusIcon = '✅';
+                } else if (request.isRejected) {
+                    status = 'Rejected';
+                    statusColor = '#dc2626';
+                    statusIcon = '❌';
+                }
+                
+                requestsData.push({
+                    id: i.toString(),
+                    storeManager: request.storeManager,
+                    itemName: request.itemName,
+                    itemType: request.itemType,
+                    quantity: request.quantity.toString(),
+                    reason: request.reason,
+                    urgency: request.urgency,
+                    additionalNotes: request.additionalNotes,
+                    requestTimestamp: new Date(request.requestTimestamp.toNumber() * 1000).toLocaleString(),
+                    approvedTimestamp: request.approvedTimestamp.toNumber() > 0 
+                        ? new Date(request.approvedTimestamp.toNumber() * 1000).toLocaleString() 
+                        : null,
+                    isPending: request.isPending,
+                    isApproved: request.isApproved,
+                    isRejected: request.isRejected,
+                    hospitalResponse: request.hospitalResponse,
+                    status,
+                    statusColor,
+                    statusIcon
+                });
+            }
+            
+            // Sort by most recent first
+            requestsData.sort((a, b) => parseInt(b.id) - parseInt(a.id));
             
             setProcurementRequests(requestsData);
+            console.log('Loaded all procurement requests:', requestsData.length);
         } catch (error) {
             console.error('Error loading procurement requests:', error);
         } finally {
@@ -224,12 +258,22 @@ const HospitalProcurementDashboard = ({ provider, account, escrow, onClose }) =>
                                             }}>
                                                 {getReasonLabel(request.reason)}
                                             </span>
+                                            <span style={{
+                                                padding: '4px 10px',
+                                                background: request.statusColor,
+                                                color: 'white',
+                                                borderRadius: '12px',
+                                                fontSize: '12px',
+                                                fontWeight: '600'
+                                            }}>
+                                                {request.statusIcon} {request.status}
+                                            </span>
                                         </div>
                                     </div>
                                     <span style={{
                                         padding: '6px 12px',
-                                        background: '#fef3c7',
-                                        color: '#92400e',
+                                        background: '#f3f4f6',
+                                        color: '#374151',
                                         borderRadius: '6px',
                                         fontSize: '13px',
                                         fontWeight: '600'
@@ -259,6 +303,35 @@ const HospitalProcurementDashboard = ({ provider, account, escrow, onClose }) =>
                                     </div>
                                 </div>
 
+                                {request.approvedTimestamp && (
+                                    <div style={{ 
+                                        background: '#f0fdf4', 
+                                        padding: '12px', 
+                                        borderRadius: '6px',
+                                        marginBottom: '15px',
+                                        border: '1px solid #86efac'
+                                    }}>
+                                        <strong style={{ color: '#16a34a', fontSize: '13px' }}>✓ Approved on:</strong>
+                                        <p style={{ margin: '5px 0 0 0', fontSize: '13px', color: '#15803d' }}>
+                                            {request.approvedTimestamp}
+                                        </p>
+                                    </div>
+                                )}
+
+                                {request.hospitalResponse && (
+                                    <div style={{ 
+                                        background: '#f9fafb', 
+                                        padding: '12px', 
+                                        borderRadius: '6px',
+                                        marginBottom: '15px'
+                                    }}>
+                                        <strong style={{ color: '#6b7280', fontSize: '13px' }}>Hospital Response:</strong>
+                                        <p style={{ margin: '5px 0 0 0', fontSize: '14px', color: '#333' }}>
+                                            {request.hospitalResponse}
+                                        </p>
+                                    </div>
+                                )}
+
                                 {request.additionalNotes && (
                                     <div style={{ 
                                         background: '#f9fafb', 
@@ -274,40 +347,73 @@ const HospitalProcurementDashboard = ({ provider, account, escrow, onClose }) =>
                                 )}
 
                                 <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
-                                    <button
-                                        onClick={() => handleApproveClick(request.id)}
-                                        disabled={loading}
-                                        style={{
+                                    {request.isPending && (
+                                        <>
+                                            <button
+                                                onClick={() => handleApproveClick(request.id)}
+                                                disabled={loading}
+                                                style={{
+                                                    padding: '10px 24px',
+                                                    background: '#16a34a',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '6px',
+                                                    cursor: loading ? 'not-allowed' : 'pointer',
+                                                    fontWeight: '600',
+                                                    fontSize: '14px',
+                                                    opacity: loading ? 0.6 : 1
+                                                }}
+                                            >
+                                                ✓ Approve Request
+                                            </button>
+                                            <button
+                                                onClick={() => handleRejectClick(request.id)}
+                                                disabled={loading}
+                                                style={{
+                                                    padding: '10px 24px',
+                                                    background: '#dc2626',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '6px',
+                                                    cursor: loading ? 'not-allowed' : 'pointer',
+                                                    fontWeight: '600',
+                                                    fontSize: '14px',
+                                                    opacity: loading ? 0.6 : 1
+                                                }}
+                                            >
+                                                ✗ Reject Request
+                                            </button>
+                                        </>
+                                    )}
+                                    {request.isApproved && (
+                                        <button
+                                            onClick={() => alert('Procurement will be issued. Stock will be delivered to the store.')}
+                                            style={{
+                                                padding: '10px 24px',
+                                                background: '#10b981',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '6px',
+                                                cursor: 'pointer',
+                                                fontWeight: '600',
+                                                fontSize: '14px'
+                                            }}
+                                        >
+                                            📦 Issue Procurement Order
+                                        </button>
+                                    )}
+                                    {request.isRejected && (
+                                        <span style={{
                                             padding: '10px 24px',
-                                            background: '#16a34a',
-                                            color: 'white',
-                                            border: 'none',
+                                            background: '#fee2e2',
+                                            color: '#991b1b',
                                             borderRadius: '6px',
-                                            cursor: loading ? 'not-allowed' : 'pointer',
-                                            fontWeight: '600',
                                             fontSize: '14px',
-                                            opacity: loading ? 0.6 : 1
-                                        }}
-                                    >
-                                        ✓ Approve Request
-                                    </button>
-                                    <button
-                                        onClick={() => handleRejectClick(request.id)}
-                                        disabled={loading}
-                                        style={{
-                                            padding: '10px 24px',
-                                            background: '#dc2626',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '6px',
-                                            cursor: loading ? 'not-allowed' : 'pointer',
-                                            fontWeight: '600',
-                                            fontSize: '14px',
-                                            opacity: loading ? 0.6 : 1
-                                        }}
-                                    >
-                                        ✗ Reject Request
-                                    </button>
+                                            fontWeight: '600'
+                                        }}>
+                                            Request was rejected
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         ))}

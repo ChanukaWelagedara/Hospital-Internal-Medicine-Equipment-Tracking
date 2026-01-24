@@ -170,7 +170,14 @@ function App() {
 
   return (
     <div>
-      <Navigation account={account} setAccount={setAccount} userRole={userRole} />
+      <Navigation 
+        account={account} 
+        setAccount={setAccount} 
+        userRole={userRole}
+        medicalAsset={medicalAsset}
+        escrow={escrow}
+        provider={provider}
+      />
       <Search />
 
       <div className='cards__section'>
@@ -285,6 +292,7 @@ function App() {
             provider={provider}
             account={account}
             medicalAsset={medicalAsset}
+            escrow={escrow}
             onClose={() => {
               console.log('Closing AddMedicine modal');
               setShowAddAsset(false);

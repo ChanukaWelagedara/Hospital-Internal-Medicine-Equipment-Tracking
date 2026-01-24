@@ -157,6 +157,34 @@ const StoreManagerDashboard = ({ escrow, medicalAsset, provider, account, onClos
             
             console.log(`Issuing asset ${issueFormData.assetName} to ${issueFormData.wardName}...`);
             
+            // Get the request details to find the asset ID
+            const request = await escrow.issuanceRequests(issueFormData.requestId);
+            const assetId = request.assetId.toNumber();
+            
+            // Get the owner of the asset
+            const assetOwner = await medicalAsset.ownerOf(assetId);
+            console.log('Asset owner:', assetOwner);
+            console.log('Current account:', account);
+            
+            // Check if escrow contract is approved by the asset owner
+            const isApproved = await medicalAsset.isApprovedForAll(assetOwner, escrow.address);
+            console.log('Is escrow approved?', isApproved);
+            
+            if (!isApproved) {
+                // If current account is the owner, approve it
+                if (assetOwner.toLowerCase() === account.toLowerCase()) {
+                    console.log('Approving escrow contract to manage assets...');
+                    const approvalTx = await medicalAsset.connect(signer).setApprovalForAll(escrow.address, true);
+                    await approvalTx.wait();
+                    console.log('Escrow contract approved successfully');
+                } else {
+                    // Owner needs to approve first
+                    alert(`The asset owner (${assetOwner.substring(0, 8)}...${assetOwner.substring(38)}) needs to approve the escrow contract first. Please switch to that account and approve, or contact them.`);
+                    setLoading(false);
+                    return;
+                }
+            }
+            
             // Call the issueAsset function - only needs requestId
             const transaction = await escrow.connect(signer).issueAsset(
                 issueFormData.requestId
