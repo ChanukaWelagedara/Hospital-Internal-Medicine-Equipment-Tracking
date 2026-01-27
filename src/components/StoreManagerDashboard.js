@@ -144,6 +144,12 @@ const StoreManagerDashboard = ({ escrow, medicalAsset, provider, account, onClos
     };
 
     const handleIssueClick = (request) => {
+        // Validate request is still pending before allowing issue
+        if (!request.isPending || request.isCompleted || request.storeApproved) {
+            alert('This request has already been processed and cannot be issued again.');
+            return;
+        }
+        
         setIssueFormData({
             requestId: request.requestId,
             wardName: request.wardName,
@@ -164,8 +170,26 @@ const StoreManagerDashboard = ({ escrow, medicalAsset, provider, account, onClos
             
             console.log(`Issuing asset ${issueFormData.assetName} to ${issueFormData.wardName}...`);
             
-            // Get the request details to find the asset ID
+            // Get the request details to find the asset ID and verify it's still pending
             const request = await escrow.issuanceRequests(issueFormData.requestId);
+            
+            // Double-check the request is still pending on the blockchain
+            if (!request.isPending) {
+                alert('This request is no longer pending. It may have already been processed.');
+                setShowIssueForm(false);
+                loadWardRequests(); // Refresh to get latest state
+                setLoading(false);
+                return;
+            }
+            
+            if (request.isIssued) {
+                alert('This asset has already been issued.');
+                setShowIssueForm(false);
+                loadWardRequests(); // Refresh to get latest state
+                setLoading(false);
+                return;
+            }
+            
             const assetId = request.assetId.toNumber();
             
             // Get the owner of the asset
@@ -730,7 +754,7 @@ const StoreManagerDashboard = ({ escrow, medicalAsset, provider, account, onClos
                                                                         </div>
                                                                     )}
 
-                                                                    {!request.storeApproved && request.availableQuantity >= request.quantity && (
+                                                                    {!request.storeApproved && !request.isCompleted && request.isPending && request.availableQuantity >= request.quantity && (
                                                                         <div className="flex gap-3">
                                                                             <button
                                                                                 onClick={() => handleIssueClick(request)}
@@ -741,6 +765,17 @@ const StoreManagerDashboard = ({ escrow, medicalAsset, provider, account, onClos
                                                                                 </svg>
                                                                                 Issue Asset
                                                                             </button>
+                                                                        </div>
+                                                                    )}
+
+                                                                    {(request.storeApproved || request.isCompleted || !request.isPending) && (
+                                                                        <div className="p-4 bg-emerald-50 rounded-lg border-l-4 border-emerald-500 flex items-center gap-3">
+                                                                            <svg className="w-5 h-5 text-emerald-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                                            </svg>
+                                                                            <p className="text-sm font-semibold text-emerald-700">
+                                                                                ✅ Asset has been issued successfully
+                                                                            </p>
                                                                         </div>
                                                                     )}
 
