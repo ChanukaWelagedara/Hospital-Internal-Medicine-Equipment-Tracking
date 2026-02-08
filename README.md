@@ -123,7 +123,9 @@ Our blockchain-based solution addresses these challenges through:
 
 ### System Architecture
 
-![System Architecture](Images/5.png)
+<div align="center">
+  <img src="Images/5.png" alt="System Architecture" width="700"/>
+</div>
 
 ### Smart Contract Structure
 
