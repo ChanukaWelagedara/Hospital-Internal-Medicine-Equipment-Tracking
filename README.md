@@ -127,21 +127,21 @@ Our blockchain-based solution addresses these challenges through:
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                     React Frontend                      │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
-│  │ Admin Panel  │  │ Store Panel  │  │  Ward Panel  │ │
-│  └──────────────┘  └──────────────┘  └──────────────┘ │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
+│  │ Admin Panel  │  │ Store Panel  │  │  Ward Panel  │   │
+│  └──────────────┘  └──────────────┘  └──────────────┘   │
 └────────────────────────┬────────────────────────────────┘
                          │ Web3/Ethers.js
                          ▼
 ┌─────────────────────────────────────────────────────────┐
 │              Ethereum Sepolia Testnet                   │
-│  ┌──────────────────────────────────────────────────┐  │
-│  │           Smart Contracts Layer                  │  │
-│  │  ┌──────────────────┐  ┌──────────────────────┐ │  │
-│  │  │ MedicalAsset.sol │  │ HospitalEscrow.sol   │ │  │
-│  │  │  (ERC-721 NFT)   │  │  (Workflow Logic)    │ │  │
-│  │  └──────────────────┘  └──────────────────────┘ │  │
-│  └──────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │           Smart Contracts Layer                  │   │
+│  │  ┌──────────────────┐  ┌──────────────────────┐  │   │
+│  │  │ MedicalAsset.sol │  │ HospitalEscrow.sol   │  │   │
+│  │  │  (ERC-721 NFT)   │  │  (Workflow Logic)    │  │   │
+│  │  └──────────────────┘  └──────────────────────┘  │   │
+│  └──────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -167,55 +167,106 @@ Our blockchain-based solution addresses these challenges through:
 
 ## 🔄 Workflow
 
-### Asset Issuance Process
+### Complete System Workflow
+
+#### Phase 1: Asset Addition (Minting)
+
+```
+Hospital Admin
+      │
+      │ 0. Mint New Asset NFT
+      │    (Add Medicine/Equipment to System)
+      │
+      ├─────────────────►  Blockchain
+      │                   (NFT Created - Status: InStore)
+      ▼
+   Store Inventory
+```
+
+**Only Hospital Admin** can add new medicines/equipment to the system by minting NFTs.
+
+---
+
+#### Phase 2: Asset Issuance Process
 
 ```
 Ward Authority              Store Manager           Hospital Admin
       │                          │                        │
-      │ 1. Request Asset         │                        │
+      │    Request Asset         │                        │
       ├─────────────────────────►│                        │
       │                          │                        │
-      │                          │ 2. Check Availability  │
-      │                          │    & Approve           │
-      │                          ├───────────────────────►│
+      │                          │    Check Availability  │
       │                          │                        │
-      │                          │                        │ 3. Final Approval
+      │                   ┌──────┴─────────┐              │
+      │                   │ Available?     │              │
+      │                   └──────┬─────────┘              │
+      │                          │                        │
+      │                      YES │                        │
+      │                          │                        |
+      │                          │                        │
+      │                          │                        │    Final Approval
       │                          │                        │    & Issue Asset
-      │◄──────────────────────────────────────────────────┤
-      │ 4. Receive Asset         │                        │
+      │◄──────────Approve    ────┤                        |
+      │    Receive Asset         │                        │
       │    (Status Updated)      │                        │
+      │                          │                        │
+      │                      NO  │ Not Available          │
+      │                          │                        │
+      │                          │    Request to Add      │
+      │                          ├───────────────────────►│
+      │                          │    New Stock           │
+      │                          │                        │
+      │                          │◄───────────────────────┤
+      │                          │    Admin Mints New NFT │
 ```
 
 ### Detailed Steps
 
-1. **Request Submission**
+**Step 0: Adding Assets to System (Prerequisite)**
 
-   - Ward Authority logs into the system
-   - Searches for required medicine/equipment
-   - Submits request with patient ID, ward name, and quantity
-   - Request stored on-chain with `isPending = true`
+- **Hospital Admin** logs into the system
+- Mints new NFT for medicine batch or equipment unit
+- Provides metadata: name, description, quantity, expiry date, manufacturer
+- NFT created with status `InStore` and available in inventory
+- **Only Hospital Admin has minting authority**
 
-2. **Store Manager Review**
+**Step 1: Request Submission**
 
-   - Views all pending requests
-   - Verifies inventory availability
-   - Checks expiry dates for medicines
-   - Approves or rejects with remarks
-   - Status updated: `storeApproved = true`
+- Ward Authority logs into the system
+- Searches for required medicine/equipment
+- Submits request with patient ID, ward name, and quantity
+- Request stored on-chain with `isPending = true`
 
-3. **Admin Approval**
+**Step 2: Store Manager Review**
 
-   - Reviews store-approved requests
-   - Performs final authorization check
-   - Approves issuance
-   - Smart contract executes asset transfer
-   - NFT status updated (InStore → IssuedToWard)
-   - Quantity reduced in inventory
+- Views all pending requests
+- **Checks if asset exists in store inventory**
+- Verifies available quantity
+- Checks expiry dates for medicines
+- If available: Approves and forwards to admin
+- If **NOT available**: Rejects request and notifies admin to add new stock
+- Status updated: `storeApproved = true` (if available)
 
-4. **Record Keeping**
-   - All actions logged with timestamps
-   - Immutable audit trail maintained
-   - Event emissions for frontend notifications
+**Step 3: Admin Final Approval**
+
+- Reviews store-approved requests
+- Performs final authorization check
+- Smart contract executes asset transfer
+- NFT status updated (InStore → IssuedToWard)
+- Quantity reduced in inventory
+
+**Step 4: Record Keeping**
+
+- All actions logged with timestamps
+- Immutable audit trail maintained
+- Event emissions for frontend notifications
+
+**Step 5-6: Replenishment Cycle** (If stock unavailable)
+
+- Store Manager identifies shortage
+- Requests Hospital Admin to add new stock
+- Hospital Admin mints new NFT assets
+- Cycle returns to Step 1
 
 ---
 
