@@ -2,10 +2,10 @@
    
     "11155111": {
         "medicalAsset": {
-            "address": "0x93D32D63d38DfC019cC93CDd0d556FCB5ECBe669"
+            "address": "0x9dd0351861DbC8A7B19E3aEa7Dd9b05930E0F3b3"
         },
         "hospitalEscrow": {
-            "address": "0x64F902Be98e98e6D582A72B786F80B656E358732"
+            "address": "0x3b090a75BBD293e6A5930A09dcC77818c79EE642"
         }
     }
 }
