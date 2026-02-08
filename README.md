@@ -124,7 +124,7 @@ Our blockchain-based solution addresses these challenges through:
 ### System Architecture
 
 <div align="center">
-  <img src="Images/5.png" alt="System Architecture" width="700"/>
+  <img src="Images/5.png" alt="System Architecture" width="500"/>
 </div>
 
 ### Smart Contract Structure
@@ -233,7 +233,7 @@ Ward Authority              Store Manager           Hospital Admin
 
 **Step 3: Admin Final Approval**
 
-- Reviews store  manager requests
+- Reviews store manager requests
 - Issue new stock
 - Smart contract executes asset transfer
 - NFT status updated (InStore → IssuedToWard)
