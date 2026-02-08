@@ -27,13 +27,14 @@
 
 ## 🔍 Overview
 
-![System Overview](images/1.png)
+![System Overview](Images/1.png)
 
 The **Hospital Internal Medicine Equipment Tracking System** is a decentralized application (DApp) that leverages blockchain technology to solve critical challenges in hospital asset management. This system provides an immutable, transparent, and secure platform for tracking medicines and medical equipment within hospital premises.
 
 Unlike traditional supply chain solutions, this is an **internal hospital tracking system** where NFTs serve as digital records for medicines and equipment, enabling real-time visibility, accountability, and audit trails. Each asset is represented as an ERC-721 NFT, containing metadata such as batch information, quantities, expiry dates, and issuance history.
 
 **Key Highlights:**
+
 - 🔐 **Immutable Records**: All transactions are recorded on the Ethereum blockchain
 - 👥 **Role-Based Access Control (RBAC)**: Three-tier authorization system
 - 🎯 **Real-Time Tracking**: Monitor asset movement and status updates
@@ -60,25 +61,27 @@ These challenges result in operational inefficiencies, increased costs, complian
 
 ## ✅ Solution
 
-![Smart Contract Structure](images/2.png)
+![Smart Contract Structure](Images/2.png)
 
 Our blockchain-based solution addresses these challenges through:
 
 ### Core Components
 
 1. **Smart Contracts**
+
    - **MedicalAsset.sol**: ERC-721 NFT contract for tokenizing medicines and equipment
    - **HospitalEscrow.sol**: Escrow contract managing the approval workflow and issuance logic
 
 2. **Role-Based Access Control (RBAC)**
-   
-   ![RBAC System](images/3.png)
-   
+
+   ![RBAC System](Images/3.png)
+
    - **Hospital Admin**: Mints new assets (NFTs), approves final issuance
    - **Store Manager**: Manages inventory, approves availability
    - **Ward Authority**: Requests medicines/equipment for patient care
 
 3. **Decentralized Storage**
+
    - Asset metadata stored as JSON files
    - Immutable records on Ethereum blockchain (Sepolia testnet)
 
@@ -92,21 +95,25 @@ Our blockchain-based solution addresses these challenges through:
 ## 🛠️ Tech Stack
 
 ### Blockchain Layer
+
 - **Solidity 0.8.17**: Smart contract development
 - **Hardhat**: Development environment, testing, and deployment
 - **OpenZeppelin Contracts**: Secure, audited ERC-721 implementation
 - **Ethers.js**: Blockchain interaction library
 
 ### Frontend
+
 - **React.js 18.2.0**: Component-based UI framework
 - **Tailwind CSS**: Utility-first styling
 - **Web3 Integration**: MetaMask connectivity
 
 ### Network
+
 - **Sepolia Testnet**: Ethereum test network for deployment
 - **Chain ID**: 11155111
 
 ### Development Tools
+
 - **Node.js**: Runtime environment
 - **npm**: Package management
 - **Git**: Version control
@@ -140,15 +147,17 @@ Our blockchain-based solution addresses these challenges through:
 
 ### Smart Contract Structure
 
-![Contract Architecture](images/2.png)
+![Contract Architecture](Images/2.png)
 
 **MedicalAsset Contract**
+
 - Inherits from OpenZeppelin's ERC721URIStorage
 - Mints NFTs representing medicine batches or equipment units
 - Tracks quantities, status, and metadata
 - Emits events for all state changes
 
 **HospitalEscrow Contract**
+
 - Manages issuance request lifecycle
 - Implements multi-signature approval workflow
 - Updates NFT status upon successful issuance
@@ -180,12 +189,14 @@ Ward Authority              Store Manager           Hospital Admin
 ### Detailed Steps
 
 1. **Request Submission**
+
    - Ward Authority logs into the system
    - Searches for required medicine/equipment
    - Submits request with patient ID, ward name, and quantity
    - Request stored on-chain with `isPending = true`
 
 2. **Store Manager Review**
+
    - Views all pending requests
    - Verifies inventory availability
    - Checks expiry dates for medicines
@@ -193,6 +204,7 @@ Ward Authority              Store Manager           Hospital Admin
    - Status updated: `storeApproved = true`
 
 3. **Admin Approval**
+
    - Reviews store-approved requests
    - Performs final authorization check
    - Approves issuance
@@ -209,26 +221,30 @@ Ward Authority              Store Manager           Hospital Admin
 
 ## ✨ Features
 
-![System Advantages](images/4.png)
+![System Advantages](Images/4.png)
 
 ### Core Functionality
 
 - **🎫 NFT-Based Asset Tracking**
+
   - Each medicine batch or equipment unit represented as an ERC-721 NFT
   - Unique token IDs for granular tracking
   - Metadata includes name, description, quantity, expiry date, manufacturer
 
 - **👥 Three-Tier RBAC**
+
   - Hospital Admin: Minting and final approval authority
   - Store Manager: Inventory management and availability verification
   - Ward Authority: Request submission for patient care
 
 - **📦 Quantity Management**
+
   - Track total quantity and remaining quantity for each asset
   - Automatic reduction upon issuance
   - Prevent over-allocation
 
 - **📊 Status Tracking**
+
   - InStore: Available in hospital pharmacy/storage
   - IssuedToWard: Dispatched to ward for patient care
   - IssuedToPatient: Administered to specific patient
@@ -236,16 +252,19 @@ Ward Authority              Store Manager           Hospital Admin
   - Disposed: Properly discarded/written off
 
 - **🔍 Advanced Search**
+
   - Filter by asset type (Medicine/Equipment)
   - Search by name, ID, or batch number
   - View detailed asset information
 
 - **📝 Approval Workflow**
+
   - Multi-level approval mechanism
   - Request tracking with status updates
   - Store and admin remarks/comments
 
 - **📈 Dashboard Analytics**
+
   - Real-time inventory levels
   - Pending request counts
   - Issuance history
@@ -266,6 +285,7 @@ Ward Authority              Store Manager           Hospital Admin
 The smart contracts are deployed on the **Sepolia Ethereum Testnet**, a proof-of-stake test network that mirrors Ethereum mainnet functionality without real ETH costs.
 
 **Network Details:**
+
 - **Network Name**: Sepolia
 - **Chain ID**: 11155111
 - **RPC URL**: `https://sepolia.infura.io/v3/YOUR_PROJECT_ID`
@@ -274,13 +294,15 @@ The smart contracts are deployed on the **Sepolia Ethereum Testnet**, a proof-of
 ### Prerequisites
 
 1. **Get Sepolia Test ETH**
+
    - Visit [Sepolia Faucet](https://sepoliafaucet.com/)
    - Or use [Alchemy Sepolia Faucet](https://sepoliafaucet.com/)
    - Request test ETH for deployment (requires ~0.05 ETH)
 
 2. **Setup Environment Variables**
-   
+
    Create a `.env` file in the root directory:
+
    ```env
    SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID
    PRIVATE_KEY_ADMIN=your_hospital_admin_private_key
@@ -293,11 +315,13 @@ The smart contracts are deployed on the **Sepolia Ethereum Testnet**, a proof-of
 ### Deployment Steps
 
 1. **Compile Contracts**
+
    ```bash
    npx hardhat compile
    ```
 
 2. **Deploy to Sepolia Testnet**
+
    ```bash
    npx hardhat run scripts/deploy-with-gas.js --network sepolia
    ```
@@ -310,6 +334,7 @@ The smart contracts are deployed on the **Sepolia Ethereum Testnet**, a proof-of
 ### Contract Verification (Optional)
 
 Verify contracts on Etherscan for public transparency:
+
 ```bash
 npx hardhat verify --network sepolia DEPLOYED_CONTRACT_ADDRESS
 ```
@@ -317,6 +342,7 @@ npx hardhat verify --network sepolia DEPLOYED_CONTRACT_ADDRESS
 ### Post-Deployment Configuration
 
 Update `src/config.json` with deployed contract addresses:
+
 ```json
 {
   "MedicalAssetAddress": "0xYourMedicalAssetContractAddress",
@@ -339,54 +365,62 @@ Update `src/config.json` with deployed contract addresses:
 ### Installation & Setup
 
 1. **Clone the Repository**
+
    ```bash
    git clone https://github.com/yourusername/Hospital-Internal-Medicine-Equipment-Tracking.git
    cd Hospital-Internal-Medicine-Equipment-Tracking
    ```
 
 2. **Install Dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Configure Environment**
-   
+
    Create `.env` file with required variables (see Deployment section)
 
 4. **Compile Smart Contracts**
+
    ```bash
    npx hardhat compile
    ```
 
 5. **Run Local Blockchain (Optional)**
-   
+
    For local testing without Sepolia:
+
    ```bash
    npx hardhat node
    ```
 
 6. **Deploy Contracts**
-   
+
    For Sepolia testnet:
+
    ```bash
    npx hardhat run scripts/deploy-with-gas.js --network sepolia
    ```
-   
+
    For local network:
+
    ```bash
    npx hardhat run scripts/deploy.js --network localhost
    ```
 
 7. **Update Configuration**
-   
+
    Copy deployed contract addresses to `src/config.json`
 
 8. **Start React Frontend**
+
    ```bash
    npm start
    ```
 
 9. **Configure MetaMask**
+
    - Add Sepolia network to MetaMask
    - Import accounts using private keys from `.env`
    - Switch to appropriate account based on role
@@ -399,11 +433,13 @@ Update `src/config.json` with deployed contract addresses:
 ### Testing
 
 Run smart contract tests:
+
 ```bash
 npx hardhat test
 ```
 
 Check test coverage:
+
 ```bash
 npx hardhat coverage
 ```
@@ -411,14 +447,17 @@ npx hardhat coverage
 ### Troubleshooting
 
 **Issue: Transaction Fails**
+
 - Ensure sufficient Sepolia ETH in wallet
 - Check gas price settings in `hardhat.config.js`
 
 **Issue: Contract Not Found**
+
 - Verify contract addresses in `config.json`
 - Check network ID matches Sepolia (11155111)
 
 **Issue: MetaMask Connection Failed**
+
 - Ensure correct network selected
 - Clear MetaMask activity/nonce data
 
@@ -429,10 +468,12 @@ npx hardhat coverage
 ### Short-Term Goals
 
 - **📱 Mobile Application**
+
   - React Native app for on-the-go access
   - QR code scanning for quick asset lookup
 
 - **📊 Advanced Analytics**
+
   - Predictive analytics for inventory management
   - Usage pattern visualization
   - Automated expiry notifications
@@ -444,11 +485,13 @@ npx hardhat coverage
 ### Mid-Term Goals
 
 - **🏢 Multi-Hospital Network**
+
   - Inter-hospital asset sharing and transfers
   - Centralized procurement dashboard
   - Hospital-to-hospital lending protocols
 
 - **📜 Compliance & Reporting**
+
   - Automated regulatory compliance reports
   - Export data for audits
   - Digital signatures for audit trails
@@ -461,19 +504,23 @@ npx hardhat coverage
 ### Long-Term Vision
 
 - **🌍 IPFS Integration**
+
   - Decentralized storage for asset metadata
   - Reduced on-chain storage costs
 
 - **⚡ Layer 2 Solutions**
+
   - Migration to Polygon or Arbitrum for lower gas costs
   - Faster transaction finality
 
 - **🔗 Interoperability**
+
   - Integration with existing Hospital Management Systems (HMS)
   - API endpoints for third-party applications
   - Cross-chain compatibility
 
 - **📋 Supply Chain Extension**
+
   - Track assets from manufacturer to hospital
   - Vendor management and procurement workflows
   - Cold chain monitoring for temperature-sensitive items
@@ -485,39 +532,6 @@ npx hardhat coverage
 
 ---
 
-## 📄 License
-
-This project is licensed under the **MIT License**.
-
-```
-MIT License
-
-Copyright (c) 2026 Hospital Internal Medicine Equipment Tracking System
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
-
----
-
-
----
-
 ## 🙏 Acknowledgments
 
 - OpenZeppelin for secure smart contract libraries
@@ -526,8 +540,6 @@ SOFTWARE.
 - React.js community
 
 ---
-
-
 
 <div align="center">
 
